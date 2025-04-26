@@ -1,0 +1,4 @@
+# 要显示的仓库列表
+repositories:
+  - owner: huanhuan0812
+    name: classtools
