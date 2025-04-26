@@ -2,3 +2,4 @@
 repositories:
   - owner: huanhuan0812
     name: classtools
+    branch: main

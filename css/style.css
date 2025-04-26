@@ -21,8 +21,8 @@ h1 {
 
 .repos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 25px;
 }
 
 .repo-card {
@@ -33,19 +33,95 @@ h1 {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.repo-card h3 {
+.repo-header h3 {
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     font-size: 18px;
 }
 
-.repo-card h3 a {
+.repo-header h3 a {
     color: #0366d6;
     text-decoration: none;
 }
 
-.repo-card h3 a:hover {
+.repo-header h3 a:hover {
     text-decoration: underline;
+}
+
+.repo-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: #586069;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.repo-updated i,
+.repo-stats i {
+    margin-right: 3px;
+}
+
+.repo-stats span {
+    margin-left: 10px;
+}
+
+.repo-stats .stars {
+    color: #f1c40f;
+}
+
+.repo-stats .forks {
+    color: #3498db;
+}
+
+.repo-description {
+    margin: 15px 0;
+    color: #586069;
+    font-size: 14px;
+}
+
+.repo-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e1e4e8;
+}
+
+.repo-link {
+    display: inline-block;
+    font-size: 13px;
+    color: #586069;
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #e1e4e8;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.repo-link:hover {
+    background-color: #f6f8fa;
+    color: #0366d6;
+}
+
+.repo-link i {
+    margin-right: 5px;
+}
+
+.commits-section {
+    margin-top: 15px;
+}
+
+.commits-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 15px;
+    color: #586069;
+}
+
+.commits-section h4 i {
+    margin-right: 5px;
 }
 
 .commits-list {
@@ -69,12 +145,19 @@ h1 {
     display: block;
 }
 
+.commit-sha {
+    font-family: monospace;
+    background-color: #f6f8fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #0366d6;
+    font-size: 12px;
+    margin-right: 5px;
+}
+
 .commit-message {
-    display: block;
-    margin-bottom: 5px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: inline;
+    font-size: 13px;
 }
 
 .commit-meta {
@@ -82,11 +165,12 @@ h1 {
     align-items: center;
     font-size: 12px;
     color: #586069;
+    margin-top: 5px;
 }
 
 .avatar {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
     border-radius: 3px;
     margin-right: 5px;
 }
@@ -95,15 +179,24 @@ h1 {
     margin-right: 8px;
 }
 
+.date {
+    font-size: 11px;
+}
+
 .view-all {
     display: inline-block;
-    font-size: 14px;
+    font-size: 13px;
     color: #586069;
     text-decoration: none;
 }
 
 .view-all:hover {
     color: #0366d6;
+}
+
+.view-all i {
+    margin-left: 3px;
+    font-size: 11px;
 }
 
 .error {
@@ -113,5 +206,14 @@ h1 {
 @media (max-width: 768px) {
     .repos-grid {
         grid-template-columns: 1fr;
+    }
+
+    .repo-meta {
+        flex-direction: column;
+    }
+
+    .repo-stats span {
+        margin-left: 0;
+        margin-right: 10px;
     }
 }
