@@ -17,9 +17,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}  # 可选，自动获取 Pages URL
     steps:
-      - name: Use Token
-        env:
-          TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
       - uses: actions/checkout@v3
 
       - name: Setup Pages
