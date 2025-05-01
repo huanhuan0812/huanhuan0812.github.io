@@ -217,3 +217,48 @@ h1 {
         margin-right: 10px;
     }
 }
+
+/* 新增加载动画样式 */
+.loading-spinner {
+    text-align: center;
+    padding: 30px;
+    color: #586069;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #0366d6;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 重试按钮样式 */
+.retry-btn {
+    background-color: #0366d6;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-top: 10px;
+}
+
+.retry-btn:hover {
+    background-color: #0356b6;
+}
+
+/* 调整卡片最小宽度 */
+@media (max-width: 768px) {
+    .repos-grid {
+        grid-template-columns: minmax(300px, 1fr);
+    }
+}

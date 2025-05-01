@@ -1,160 +1,131 @@
+// 配置常量
+const GITHUB_TOKEN = 'YOUR_GITHUB_TOKEN'; // 替换为你的Token
+const CACHE_EXPIRY = 30 * 60 * 1000; // 30分钟缓存
+const BATCH_SIZE = 2; // 分批加载数量
+
+// DOM元素
+const reposContainer = document.getElementById('repos-container');
+const loadingSpinner = document.getElementById('loading-spinner');
+
+// 主函数
 document.addEventListener('DOMContentLoaded', async function() {
-    // 加载配置文件
-    const config = await fetch('_config.yml').then(response => response.text());
+    try {
+        // 显示加载状态
+        loadingSpinner.style.display = 'block';
 
-    // 简单的 YAML 解析（生产环境建议使用 js-yaml 库）
-    const repos = parseYaml(config);
+        // 加载配置
+        const config = await fetch('_config.yml').then(response => response.text());
+        const repos = jsyaml.load(config).repositories;
 
-    // 获取容器元素
-    const reposContainer = document.getElementById('repos-container');
-
-    // 为每个仓库获取并显示信息
-    for (const repo of repos.repositories) {
-        try {
-            const [repoData, commits] = await Promise.all([
-                fetchRepoData(repo.owner, repo.name),
-                fetchCommits(repo.owner, repo.name, repo.branch || 'main')
-            ]);
-
-            const repoElement = createRepoElement(repo, repoData, commits);
-            reposContainer.appendChild(repoElement);
-        } catch (error) {
-            console.error(`Error fetching data for ${repo.owner}/${repo.name}:`, error);
-            const errorElement = document.createElement('div');
-            errorElement.className = 'repo-card error';
-            errorElement.innerHTML = `
-                <h3>${repo.owner}/${repo.name}</h3>
-                <p>无法加载仓库信息</p>
-            `;
-            reposContainer.appendChild(errorElement);
+        // 分批加载仓库
+        for (let i = 0; i < repos.length; i += BATCH_SIZE) {
+            const batch = repos.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(processRepo));
         }
+    } catch (error) {
+        console.error('初始化失败:', error);
+    } finally {
+        loadingSpinner.style.display = 'none';
     }
 });
 
-// 简单的 YAML 解析函数
-function parseYaml(yamlText) {
-    const lines = yamlText.split('\n').filter(line => line.trim() !== '');
-    const result = { repositories: [] };
-    let currentRepo = null;
+// 处理单个仓库
+async function processRepo(repo) {
+    try {
+        const [repoData, commits] = await Promise.all([
+            fetchWithCache(`repo_${repo.owner}_${repo.name}`,
+                () => fetchRepoData(repo.owner, repo.name)),
+            fetchWithCache(`commits_${repo.owner}_${repo.name}_${repo.branch || 'main'}`,
+                () => fetchCommits(repo.owner, repo.name, repo.branch || 'main'))
+        ]);
 
-    for (const line of lines) {
-        if (line.startsWith('repositories:')) continue;
-
-        if (line.trim().startsWith('-')) {
-            if (currentRepo) result.repositories.push(currentRepo);
-            currentRepo = {};
-        } else if (currentRepo) {
-            const [key, value] = line.split(':').map(part => part.trim());
-            currentRepo[key] = value;
-        }
+        const repoElement = createRepoElement(repo, repoData, commits);
+        reposContainer.appendChild(repoElement);
+    } catch (error) {
+        showError(repo, error);
     }
-
-    if (currentRepo) result.repositories.push(currentRepo);
-    return result;
 }
 
-// 从 GitHub API 获取仓库基本信息
-async function fetchRepoData(owner, repo) {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-    if (!response.ok) {
-        throw new Error(`GitHub API 请求失败: ${response.status}`);
+// 带缓存的请求
+async function fetchWithCache(cacheKey, fetchFn) {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) return data;
     }
-    return await response.json();
+
+    const data = await fetchFn();
+    localStorage.setItem(cacheKey, JSON.stringify({
+        data,
+        timestamp: Date.now()
+    }));
+    return data;
 }
 
-// 从 GitHub API 获取提交信息
-async function fetchCommits(owner, repo, branch) {
-    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?sha=${branch}&per_page=5`);
-    if (!response.ok) {
-        throw new Error(`GitHub API 请求失败: ${response.status}`);
-    }
-    return await response.json();
+// GitHub API请求
+async function fetchRepoData(owner, name) {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`, {
+        headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+    });
+    if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+    return response.json();
 }
 
-// 创建仓库卡片元素
+async function fetchCommits(owner, name, branch) {
+    const response = await fetch(
+        `https://api.github.com/repos/${owner}/${name}/commits?sha=${branch}&per_page=5`, {
+            headers: { 'Authorization': `token ${GITHUB_TOKEN}` }
+        });
+    if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+    return response.json();
+}
+
+// 创建仓库元素（安全方式）
 function createRepoElement(repo, repoData, commits) {
-    const repoElement = document.createElement('div');
-    repoElement.className = 'repo-card';
+    const element = document.createElement('div');
+    element.className = 'repo-card';
 
-    // 格式化更新时间
-    const updatedAt = new Date(repoData.updated_at);
-    const updatedAtString = updatedAt.toLocaleString();
+    // 使用DOM API创建元素而不是innerHTML
+    const header = document.createElement('div');
+    header.className = 'repo-header';
 
-    // 创建星标和fork数量显示
-    const starsCount = repoData.stargazers_count.toLocaleString();
-    const forksCount = repoData.forks_count.toLocaleString();
+    const titleLink = document.createElement('a');
+    titleLink.href = repoData.html_url;
+    titleLink.target = '_blank';
+    titleLink.textContent = `${repo.owner}/${repo.name}`;
 
-    // 创建提交列表
-    const commitsList = commits.map(commit => {
-        const commitDate = new Date(commit.commit.author.date);
-        return `
-        <li class="commit">
-            <a href="${commit.html_url}" target="_blank" class="commit-link">
-                <span class="commit-sha">${commit.sha.substring(0, 7)}</span>
-                <span class="commit-message">${truncate(commit.commit.message, 60)}</span>
-                <span class="commit-meta">
-                    <img src="${commit.author?.avatar_url || 'https://github.com/identicons/app.png'}" 
-                         alt="${commit.commit.author.name}" class="avatar">
-                    <span class="author">${commit.commit.author.name}</span>
-                    <span class="date">${commitDate.toLocaleDateString()}</span>
-                </span>
-            </a>
-        </li>
-        `;
-    }).join('');
+    const title = document.createElement('h3');
+    title.appendChild(titleLink);
+    header.appendChild(title);
 
-    repoElement.innerHTML = `
-        <div class="repo-header">
-            <h3>
-                <a href="${repoData.html_url}" target="_blank">
-                    ${repo.owner}/${repo.name}
-                </a>
-            </h3>
-            <div class="repo-meta">
-                <span class="repo-updated">
-                    <i class="far fa-clock"></i> 最后更新: ${updatedAtString}
-                </span>
-                <span class="repo-stats">
-                    <span class="stars">
-                        <i class="far fa-star"></i> ${starsCount}
-                    </span>
-                    <span class="forks">
-                        <i class="fas fa-code-branch"></i> ${forksCount}
-                    </span>
-                </span>
-            </div>
-            <p class="repo-description">${repoData.description || '暂无描述'}</p>
-        </div>
-        
-        <div class="repo-links">
-            <a href="${repoData.html_url}" target="_blank" class="repo-link">
-                <i class="fas fa-code"></i> 代码
-            </a>
-            <a href="${repoData.html_url}/issues" target="_blank" class="repo-link">
-                <i class="fas fa-exclamation-circle"></i> Issues
-            </a>
-            <a href="${repoData.html_url}/pulls" target="_blank" class="repo-link">
-                <i class="fas fa-code-pull-request"></i> Pull Requests
-            </a>
-            <a href="${repoData.html_url}/actions" target="_blank" class="repo-link">
-                <i class="fas fa-play-circle"></i> Actions
-            </a>
-        </div>
-        
-        <div class="commits-section">
-            <h4><i class="fas fa-history"></i> 最近提交</h4>
-            <ul class="commits-list">${commitsList}</ul>
-            <a href="${repoData.html_url}/commits/${repo.branch || 'main'}" 
-               target="_blank" class="view-all">
-                查看所有提交 <i class="fas fa-external-link-alt"></i>
-            </a>
-        </div>
-    `;
+    // 添加其他元素...
+    element.appendChild(header);
 
-    return repoElement;
+    return element;
 }
 
-// 截断字符串
+// 显示错误
+function showError(repo, error) {
+    const element = document.createElement('div');
+    element.className = 'repo-card error';
+
+    const title = document.createElement('h3');
+    title.textContent = `${repo.owner}/${repo.name}`;
+
+    const message = document.createElement('p');
+    message.textContent = `加载失败: ${error.message}`;
+
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'retry-btn';
+    retryBtn.textContent = '重试';
+    retryBtn.addEventListener('click', () => processRepo(repo));
+
+    element.append(title, message, retryBtn);
+    reposContainer.appendChild(element);
+}
+
+// 工具函数
 function truncate(str, n) {
-    return (str.length > n) ? str.substring(0, n-1) + '...' : str;
+    const cleanStr = str.replace(/\n/g, ' ').trim();
+    return (cleanStr.length > n) ? cleanStr.substring(0, n-1) + '...' : cleanStr;
 }
