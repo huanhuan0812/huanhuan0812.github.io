@@ -1,11 +1,15 @@
-# 要显示的仓库列表
 repositories:
   - owner: huanhuan0812
     name: classtools
     branch: main
+    description: "课程工具集合"
+    
   - owner: huanhuan0812
     name: runtime1
     branch: main
+    description: "运行时"
+    
   - owner: huanhuan0812
     name: huanhuan0812.github.io
     branch: main
+    description: "个人主页"
