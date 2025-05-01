@@ -1,6 +1,7 @@
 // 配置常量
 require('dotenv').config();
 
+const CONFIG_PATH = './_config.yml';
 const GITHUB_TOKEN = process.env.MY_GITHUB_TOKEN; // 替换为你的Token
 const CACHE_EXPIRY = 30 * 60 * 1000; // 30分钟缓存
 const BATCH_SIZE = 2; // 分批加载数量
