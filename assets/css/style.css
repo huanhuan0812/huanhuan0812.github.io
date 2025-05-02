@@ -162,3 +162,167 @@ h1 {
         padding: 0 1rem;
     }
 }
+
+/* 详情页特定样式 */
+.repo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.repo-header h1 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.repo-meta {
+    display: flex;
+    gap: 1rem;
+}
+
+.repo-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.repo-details-grid {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 1.5rem;
+}
+
+.repo-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.repo-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+}
+
+.repo-links ul, .repo-stats ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.repo-links li, .repo-stats li {
+    padding: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.repo-links a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.repo-links a:hover {
+    text-decoration: underline;
+}
+
+.repo-stats i {
+    width: 20px;
+    text-align: center;
+}
+
+.branch-selector {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 4px;
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 1rem;
+}
+
+.tab-button {
+    padding: 0.5rem 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    position: relative;
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.commit-item, .release-item, .issue-item {
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.commit-item:last-child, .release-item:last-child, .issue-item:last-child {
+    border-bottom: none;
+}
+
+.commit-message {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+.commit-meta, .release-meta, .issue-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.load-more {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.load-more:hover {
+    background: var(--secondary-color);
+}
+
+@media (max-width: 768px) {
+    .repo-details-grid {
+        grid-template-columns: 1fr;
+    }
+}
