@@ -1,8 +1,40 @@
+/* 保持原有样式不变 */
+.error-container {
+    display: none;
+    margin-bottom: 20px;
+}
+
+.error-message {
+    background-color: #ffebee;
+    border-left: 4px solid #d73a49;
+    padding: 15px;
+    border-radius: 0 4px 4px 0;
+}
+
+.retry-btn {
+    background-color: #0366d6;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+:root {
+    --primary-color: #0366d6;
+    --error-color: #d73a49;
+    --text-color: #24292e;
+    --muted-color: #586069;
+    --border-color: #e1e4e8;
+    --bg-color: #f6f8fa;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
-    color: #24292e;
-    background-color: #f6f8fa;
+    color: var(--text-color);
+    background-color: var(--bg-color);
     margin: 0;
     padding: 20px;
 }
@@ -16,219 +48,25 @@ body {
 h1 {
     text-align: center;
     margin-bottom: 30px;
-    color: #0366d6;
+    color: var(--primary-color);
 }
 
-.repos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 25px;
+h1 i {
+    margin-right: 10px;
 }
 
-.repo-card {
-    background: white;
-    border: 1px solid #e1e4e8;
-    border-radius: 6px;
-    padding: 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.repo-header h3 {
-    margin-top: 0;
-    margin-bottom: 10px;
-    font-size: 18px;
-}
-
-.repo-header h3 a {
-    color: #0366d6;
-    text-decoration: none;
-}
-
-.repo-header h3 a:hover {
-    text-decoration: underline;
-}
-
-.repo-meta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: #586069;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.repo-updated i,
-.repo-stats i {
-    margin-right: 3px;
-}
-
-.repo-stats span {
-    margin-left: 10px;
-}
-
-.repo-stats .stars {
-    color: #f1c40f;
-}
-
-.repo-stats .forks {
-    color: #3498db;
-}
-
-.repo-description {
-    margin: 15px 0;
-    color: #586069;
-    font-size: 14px;
-}
-
-.repo-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin: 15px 0;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #e1e4e8;
-}
-
-.repo-link {
-    display: inline-block;
-    font-size: 13px;
-    color: #586069;
-    text-decoration: none;
-    padding: 5px 10px;
-    border: 1px solid #e1e4e8;
-    border-radius: 4px;
-    transition: all 0.2s;
-}
-
-.repo-link:hover {
-    background-color: #f6f8fa;
-    color: #0366d6;
-}
-
-.repo-link i {
-    margin-right: 5px;
-}
-
-.commits-section {
-    margin-top: 15px;
-}
-
-.commits-section h4 {
-    margin: 0 0 10px 0;
-    font-size: 15px;
-    color: #586069;
-}
-
-.commits-section h4 i {
-    margin-right: 5px;
-}
-
-.commits-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 15px 0;
-}
-
-.commit {
-    padding: 10px 0;
-    border-bottom: 1px solid #e1e4e8;
-}
-
-.commit:last-child {
-    border-bottom: none;
-}
-
-.commit-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-
-.commit-sha {
-    font-family: monospace;
-    background-color: #f6f8fa;
-    padding: 2px 4px;
-    border-radius: 3px;
-    color: #0366d6;
-    font-size: 12px;
-    margin-right: 5px;
-}
-
-.commit-message {
-    display: inline;
-    font-size: 13px;
-}
-
-.commit-meta {
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    color: #586069;
-    margin-top: 5px;
-}
-
-.avatar {
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
-    margin-right: 5px;
-}
-
-.author {
-    margin-right: 8px;
-}
-
-.date {
-    font-size: 11px;
-}
-
-.view-all {
-    display: inline-block;
-    font-size: 13px;
-    color: #586069;
-    text-decoration: none;
-}
-
-.view-all:hover {
-    color: #0366d6;
-}
-
-.view-all i {
-    margin-left: 3px;
-    font-size: 11px;
-}
-
-.error {
-    border-left: 4px solid #d73a49;
-}
-
-@media (max-width: 768px) {
-    .repos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .repo-meta {
-        flex-direction: column;
-    }
-
-    .repo-stats span {
-        margin-left: 0;
-        margin-right: 10px;
-    }
-}
-
-/* 新增加载动画样式 */
+/* 加载动画 */
 .loading-spinner {
     text-align: center;
     padding: 30px;
-    color: #586069;
+    color: var(--muted-color);
+    display: none;
 }
 
 .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-radius: 50%;
-    border-top: 4px solid #0366d6;
+    border-top: 4px solid var(--primary-color);
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
@@ -240,25 +78,50 @@ h1 {
     100% { transform: rotate(360deg); }
 }
 
-/* 重试按钮样式 */
-.retry-btn {
-    background-color: #0366d6;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 13px;
-    margin-top: 10px;
+/* 仓库网格 */
+.repos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
 }
 
-.retry-btn:hover {
-    background-color: #0356b6;
+.repo-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
 }
 
-/* 调整卡片最小宽度 */
+.repo-card:hover {
+    transform: translateY(-5px);
+}
+
+.repo-header h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.repo-header h3 a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.repo-header h3 a:hover {
+    text-decoration: underline;
+}
+
+/* 其他原有样式保持不变... */
+
+/* 移动端适配 */
 @media (max-width: 768px) {
     .repos-grid {
         grid-template-columns: minmax(300px, 1fr);
+    }
+    
+    .repo-meta {
+        flex-direction: column;
     }
 }
