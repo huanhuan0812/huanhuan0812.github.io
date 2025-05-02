@@ -1,0 +1,56 @@
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #0366d6;
+}
+
+.meta {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #586069;
+}
+
+/* Details page styles */
+.details-container {
+    max-width: 800px;
+}
+
+.update-item {
+    border-bottom: 1px solid #e1e4e8;
+    padding: 15px 0;
+}
+
+.update-item h3 {
+    margin: 0 0 5px 0;
+}
+
+.update-item p {
+    margin: 5px 0;
+    color: #586069;
+    font-size: 14px;
+}
