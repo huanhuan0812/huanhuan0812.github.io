@@ -1,15 +1,19 @@
 // 配置常量
-require('dotenv').config();
-
 const CONFIG_PATH = './_config.yml';
-const GITHUB_TOKEN = process.env.MY_GITHUB_TOKEN; // 替换为你的Token
 const CACHE_EXPIRY = 30 * 60 * 1000; // 30分钟缓存
 const BATCH_SIZE = 3; // 分批加载数量
 
-// DOM元素
-const reposContainer = document.getElementById('repos-container');
-const loadingSpinner = document.getElementById('loading-spinner');
-const errorContainer = document.getElementById('error-container');
+// 检查依赖是否加载
+if (typeof jsyaml === 'undefined') {
+    document.getElementById('error-container').innerHTML = `
+        <div class="error-message">
+            <h3>系统初始化失败</h3>
+            <p>缺少必要的YAML解析器，请刷新页面重试</p>
+            <button onclick="location.reload()" class="retry-btn">刷新页面</button>
+        </div>
+    `;
+    throw new Error('jsyaml未加载');
+}
 
 // 主函数
 document.addEventListener('DOMContentLoaded', async function() {
@@ -26,36 +30,26 @@ document.addEventListener('DOMContentLoaded', async function() {
             await Promise.all(batch.map(processRepo));
         }
     } catch (error) {
-        showGlobalError('初始化失败:', error);
+        showGlobalError('初始化失败', error);
     } finally {
         hideLoading();
     }
 });
 
-// 加载配置文件
 async function loadConfig() {
     try {
         const response = await fetch(CONFIG_PATH);
-        if (!response.ok) {
-            throw new Error(`配置文件加载失败: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
         return await response.text();
     } catch (error) {
         console.error('加载配置出错:', error);
-        // 返回默认配置
-        return `
-repositories:
+        return `repositories:
   - owner: huanhuan0812
     name: classtools
-    branch: main
-  - owner: huanhuan0812
-    name: runtime1
-    branch: main
-        `;
+    branch: main`;
     }
 }
 
-// 处理单个仓库
 async function processRepo(repo) {
     try {
         const cacheKey = `repo_${repo.owner}_${repo.name}`;
@@ -66,70 +60,46 @@ async function processRepo(repo) {
         ]);
         
         const repoElement = createRepoElement(repo, repoData, commits);
-        reposContainer.appendChild(repoElement);
+        document.getElementById('repos-container').appendChild(repoElement);
     } catch (error) {
         console.error(`处理仓库 ${repo.owner}/${repo.name} 出错:`, error);
         showRepoError(repo, error);
     }
 }
 
-// 带缓存的请求
 async function fetchWithCache(cacheKey, fetchFn) {
-    try {
-        const cached = localStorage.getItem(cacheKey);
-        if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_EXPIRY) {
-                console.log(`从缓存加载: ${cacheKey}`);
-                return data;
-            }
-        }
-        
-        const data = await fetchFn();
-        localStorage.setItem(cacheKey, JSON.stringify({
-            data,
-            timestamp: Date.now()
-        }));
-        return data;
-    } catch (error) {
-        console.error(`缓存请求失败 (${cacheKey}):`, error);
-        throw error;
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) return data;
     }
+    
+    const data = await fetchFn();
+    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: Date.now() }));
+    return data;
 }
 
-// GitHub API请求
 async function fetchRepoData(owner, name) {
-    const url = `https://api.github.com/repos/${owner}/${name}`;
-    const headers = GITHUB_TOKEN ? { 'Authorization': `token ${GITHUB_TOKEN}` } : {};
-    
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-        throw new Error(`仓库请求失败: ${response.status}`);
-    }
-    return await response.json();
+    const response = await fetch(`https://api.github.com/repos/${owner}/${name}`);
+    if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+    return response.json();
 }
 
 async function fetchCommits(owner, name, branch) {
-    const url = `https://api.github.com/repos/${owner}/${name}/commits?sha=${branch}&per_page=5`;
-    const headers = GITHUB_TOKEN ? { 'Authorization': `token ${GITHUB_TOKEN}` } : {};
-    
-    const response = await fetch(url, { headers });
-    if (!response.ok) {
-        throw new Error(`提交记录请求失败: ${response.status}`);
-    }
-    return await response.json();
+    const response = await fetch(
+        `https://api.github.com/repos/${owner}/${name}/commits?sha=${branch}&per_page=5`
+    );
+    if (!response.ok) throw new Error(`请求失败: ${response.status}`);
+    return response.json();
 }
 
-// 创建仓库元素
 function createRepoElement(repo, repoData, commits) {
     const element = document.createElement('div');
     element.className = 'repo-card';
     
-    // 格式化日期
     const updatedAt = new Date(repoData.updated_at);
     const updatedAtString = updatedAt.toLocaleString();
     
-    // 创建提交列表
     const commitsList = commits.map(commit => {
         const commitDate = new Date(commit.commit.author.date);
         const cleanMessage = truncate(commit.commit.message.replace(/\n/g, ' '), 60);
@@ -198,21 +168,20 @@ function createRepoElement(repo, repoData, commits) {
     return element;
 }
 
-// 显示/隐藏加载状态
 function showLoading() {
-    loadingSpinner.style.display = 'block';
-    reposContainer.style.display = 'none';
+    document.getElementById('loading-spinner').style.display = 'block';
+    document.getElementById('repos-container').style.display = 'none';
 }
 
 function hideLoading() {
-    loadingSpinner.style.display = 'none';
-    reposContainer.style.display = 'grid';
+    document.getElementById('loading-spinner').style.display = 'none';
+    document.getElementById('repos-container').style.display = 'grid';
 }
 
-// 错误处理
 function showGlobalError(title, error) {
-    errorContainer.style.display = 'block';
-    errorContainer.innerHTML = `
+    const container = document.getElementById('error-container');
+    container.style.display = 'block';
+    container.innerHTML = `
         <div class="error-message">
             <h3>${title}</h3>
             <p>${error.message}</p>
@@ -230,10 +199,9 @@ function showRepoError(repo, error) {
         <button class="retry-btn">重试</button>
     `;
     element.querySelector('.retry-btn').addEventListener('click', () => processRepo(repo));
-    reposContainer.appendChild(element);
+    document.getElementById('repos-container').appendChild(element);
 }
 
-// 工具函数
 function truncate(str, n) {
     return (str.length > n) ? str.substring(0, n-1) + '...' : str;
 }
