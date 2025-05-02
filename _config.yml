@@ -1,5 +1,6 @@
-title: My GitHub Repositories
-description: A collection of my open source projects
+title: _huanhuan_的个人主页
+description: My Page
+github_username: huanhuan0812  # 替换为您的GitHub用户名
 theme: jekyll-theme-minimal
 plugins:
   - jekyll-feed

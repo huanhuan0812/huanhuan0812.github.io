@@ -1,7 +1,12 @@
 <div class="card" data-repo="{{ repo.repo }}">
-    <h2>{{ repo.name }}</h2>
+    <div class="card-header">
+        <i class="fab fa-github card-icon"></i>
+        <h2>{{ repo.name }}</h2>
+    </div>
     <p>{{ repo.description }}</p>
     <div class="meta">
-        <span class="last-updated">Loading update time...</span>
+    <span class="last-updated">
+      <i class="far fa-clock"></i> Loading update time...
+    </span>
     </div>
 </div>

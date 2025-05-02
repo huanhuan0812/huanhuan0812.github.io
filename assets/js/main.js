@@ -1,13 +1,27 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch last update time for each repo
-    document.querySelectorAll('.card').forEach(card => {
-        const repo = card.dataset.repo;
-        fetchRepoInfo(repo, card);
+    // 卡片悬停效果
+    const cards = document.querySelectorAll('.card');
 
-        // Add click event to navigate to details page
+    cards.forEach(card => {
+        // 鼠标进入时添加类名
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'all 0.3s ease';
+        });
+
+        // 鼠标离开时重置过渡
+        card.addEventListener('mouseleave', () => {
+            card.style.transition = 'all 0.3s ease';
+        });
+
+        // 点击卡片跳转
         card.addEventListener('click', () => {
+            const repo = card.dataset.repo;
             window.location.href = `/details.html?repo=${repo}`;
         });
+
+        // 获取仓库信息
+        const repo = card.dataset.repo;
+        fetchRepoInfo(repo, card);
     });
 });
 
