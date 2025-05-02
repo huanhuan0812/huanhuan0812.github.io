@@ -67,9 +67,58 @@ async function fetchRepoDetails(repoFullName) {
         // 获取最近问题
         fetchIssues(repoFullName);
 
+        // 获取tags
+        fetchTags(repoFullName);
+
     } catch (error) {
         console.error('Error fetching repo details:', error);
         document.getElementById('repo-description').textContent = 'Failed to load repository details';
+    }
+}
+
+async function fetchTags(repoFullName) {
+    try {
+        const response = await fetch(`https://api.github.com/repos/${repoFullName}/tags`);
+        if (!response.ok) throw new Error('Failed to fetch tags');
+
+        const tags = await response.json();
+        const tagsList = document.getElementById('tags-list');
+
+        if (tags.length === 0) {
+            tagsList.innerHTML = '<p>No tags found</p>';
+            return;
+        }
+
+        // 只显示前10个tag
+        const displayedTags = tags.slice(0, 10);
+        tagsList.innerHTML = '';
+
+        displayedTags.forEach(tag => {
+            const tagElement = document.createElement('a');
+            tagElement.className = 'tag';
+            tagElement.href = `https://github.com/${repoFullName}/releases/tag/${tag.name}`;
+            tagElement.target = '_blank';
+            tagElement.title = tag.name;
+            tagElement.innerHTML = `
+        <i class="fas fa-tag"></i>
+        <span>${tag.name}</span>
+      `;
+            tagsList.appendChild(tagElement);
+        });
+
+        // 如果有更多tag，显示查看全部链接
+        if (tags.length > 10) {
+            const moreLink = document.createElement('a');
+            moreLink.className = 'tag';
+            moreLink.href = `https://github.com/${repoFullName}/tags`;
+            moreLink.target = '_blank';
+            moreLink.textContent = `+${tags.length - 10} more`;
+            tagsList.appendChild(moreLink);
+        }
+
+    } catch (error) {
+        console.error('Error fetching tags:', error);
+        document.getElementById('tags-list').innerHTML = '<p>Failed to load tags</p>';
     }
 }
 
@@ -255,3 +304,4 @@ function setupTabs() {
         });
     });
 }
+
