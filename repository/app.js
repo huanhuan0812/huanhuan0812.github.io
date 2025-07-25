@@ -100,9 +100,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             `;
 
-            // 添加点击事件
+            // 添加点击事件 - 跳转到详情页
             card.addEventListener('click', () => {
-                window.open(repoData.html_url, '_blank');
+                window.location.href = `details.html?repo=${encodeURIComponent(repoName)}`;
             });
 
             // 添加悬停效果
