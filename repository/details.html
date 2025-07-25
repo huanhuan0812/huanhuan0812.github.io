@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>仓库详情</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .repo-detail {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+            border: 1px solid #e1e4e8;
+        }
+        
+        .repo-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .repo-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 20px;
+        }
+        
+        .repo-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+            color: var(--secondary-color);
+        }
+        
+        .repo-description {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin: 15px 0;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .repo-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .meta-card {
+            background-color: var(--bg-color);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .meta-card h3 {
+            margin-top: 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .meta-card p {
+            margin-bottom: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-button i {
+            margin-right: 5px;
+        }
+        
+        .section-title {
+            margin-top: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e1e4e8;
+        }
+        
+        .readme-content {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>返回列表
+        </a>
+
+        <div id="loading">
+            <div class="spinner"></div>
+            <p>正在加载仓库详情...</p>
+        </div>
+
+        <div id="errorMsg" class="error"></div>
+
+        <div id="repoDetail" class="repo-detail" style="display: none;">
+            <!-- 动态内容将在这里填充 -->
+        </div>
+    </div>
+
+    <script src="details.js"></script>
+</body>
+</html>
