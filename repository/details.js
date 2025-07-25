@@ -31,14 +31,14 @@ function isCacheValid(key) {
 async function cachedFetch(url, cacheKey) {
   // 检查内存缓存
   if (isCacheValid(cacheKey)) {
-    console.log(`Using cached data for ${cacheKey}`);
+    console.log(`使用缓存数据: ${cacheKey}`);
     showCacheStatus();
     return cache[cacheKey];
   }
 
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP错误! 状态码: ${response.status}`);
     
     const data = await response.json();
     // 更新缓存
@@ -49,11 +49,11 @@ async function cachedFetch(url, cacheKey) {
     
     return data;
   } catch (error) {
-    console.error(`Error fetching ${cacheKey}:`, error);
+    console.error(`获取${cacheKey}时出错:`, error);
     // 尝试使用localStorage缓存
     const storedData = localStorage.getItem(cacheKey);
     if (storedData) {
-      console.log(`Falling back to localStorage for ${cacheKey}`);
+      console.log(`回退到localStorage缓存: ${cacheKey}`);
       return JSON.parse(storedData);
     }
     throw error;
@@ -66,7 +66,7 @@ function showCacheStatus() {
 
   const status = document.createElement('div');
   status.className = 'cache-status';
-  status.textContent = 'Using cached data';
+  status.textContent = '使用缓存数据';
   document.body.appendChild(status);
   
   setTimeout(() => {
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function addRefreshButton() {
   const header = document.querySelector('.repo-header');
   const refreshBtn = document.createElement('button');
-  refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+  refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新';
   refreshBtn.className = 'refresh-btn';
   refreshBtn.onclick = () => {
     Object.keys(cache).forEach(key => delete cache[key]);
@@ -122,7 +122,7 @@ async function fetchRepoDetails(repoFullName) {
   try {
     const repoData = await cachedFetch(`https://api.github.com/repos/${repoFullName}`, cacheKey);
     
-    document.getElementById('repo-description').textContent = repoData.description || 'No description provided';
+    document.getElementById('repo-description').textContent = repoData.description || '无描述';
     document.getElementById('stargazers-count').textContent = repoData.stargazers_count;
     document.getElementById('watchers-count').textContent = repoData.watchers_count;
     document.getElementById('forks-count').textContent = repoData.forks_count;
@@ -130,7 +130,7 @@ async function fetchRepoDetails(repoFullName) {
     
     const metaContainer = document.getElementById('repo-meta');
     metaContainer.innerHTML = `
-      <span class="repo-meta-item"><i class="fas fa-code"></i> ${repoData.language || 'Unknown'}</span>
+      <span class="repo-meta-item"><i class="fas fa-code"></i> ${repoData.language || '未知'}</span>
       <span class="repo-meta-item"><i class="fas fa-calendar-alt"></i> ${new Date(repoData.created_at).toLocaleDateString()}</span>
       <span class="repo-meta-item"><i class="fas fa-sync-alt"></i> ${new Date(repoData.updated_at).toLocaleDateString()}</span>
     `;
@@ -142,8 +142,8 @@ async function fetchRepoDetails(repoFullName) {
     fetchTags(repoFullName);
     
   } catch (error) {
-    console.error('Error fetching repo details:', error);
-    document.getElementById('repo-description').textContent = 'Failed to load repository details';
+    console.error('获取仓库详情时出错:', error);
+    document.getElementById('repo-description').textContent = '加载仓库详情失败';
   }
 }
 
@@ -170,8 +170,8 @@ async function fetchBranches(repoFullName) {
     });
     
   } catch (error) {
-    console.error('Error fetching branches:', error);
-    document.getElementById('branch-selector').innerHTML = '<option value="">Failed to load branches</option>';
+    console.error('获取分支时出错:', error);
+    document.getElementById('branch-selector').innerHTML = '<option value="">加载分支失败</option>';
   }
 }
 
@@ -183,7 +183,7 @@ async function fetchTags(repoFullName) {
     const tagsList = document.getElementById('tags-list');
     
     if (tags.length === 0) {
-      tagsList.innerHTML = '<p>No tags found</p>';
+      tagsList.innerHTML = '<p>无标签</p>';
       return;
     }
     
@@ -203,13 +203,13 @@ async function fetchTags(repoFullName) {
       moreLink.className = 'tag';
       moreLink.href = `https://github.com/${repoFullName}/tags`;
       moreLink.target = '_blank';
-      moreLink.textContent = `+${tags.length - 10} more`;
+      moreLink.textContent = `+${tags.length - 10} 更多`;
       tagsList.appendChild(moreLink);
     }
     
   } catch (error) {
-    console.error('Error fetching tags:', error);
-    document.getElementById('tags-list').innerHTML = '<p>Failed to load tags</p>';
+    console.error('获取标签时出错:', error);
+    document.getElementById('tags-list').innerHTML = '<p>加载标签失败</p>';
   }
 }
 
@@ -227,7 +227,7 @@ async function fetchCommits(repoFullName, branch = 'main') {
     if (currentPage === 1) commitsList.innerHTML = '';
     
     if (commits.length === 0) {
-      if (currentPage === 1) commitsList.innerHTML = '<p>No commits found</p>';
+      if (currentPage === 1) commitsList.innerHTML = '<p>无提交记录</p>';
       document.getElementById('load-more-commits').style.display = 'none';
       return;
     }
@@ -243,7 +243,7 @@ async function fetchCommits(repoFullName, branch = 'main') {
         <div class="commit-meta">
           <span><i class="fas fa-user"></i> ${commit.commit.author.name}</span>
           <span><i class="far fa-calendar-alt"></i> ${date.toLocaleString()}</span>
-          <a href="${commit.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+          <a href="${commit.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
         </div>
       `;
       commitsList.appendChild(commitItem);
@@ -256,8 +256,8 @@ async function fetchCommits(repoFullName, branch = 'main') {
     };
     
   } catch (error) {
-    console.error('Error fetching commits:', error);
-    document.getElementById('commits-list').innerHTML = '<p>Failed to load commits</p>';
+    console.error('获取提交记录时出错:', error);
+    document.getElementById('commits-list').innerHTML = '<p>加载提交记录失败</p>';
   }
 }
 
@@ -271,7 +271,7 @@ async function fetchReleases(repoFullName) {
     );
     
     const releasesList = document.getElementById('releases-list');
-    releasesList.innerHTML = releases.length === 0 ? '<p>No releases found</p>' : '';
+    releasesList.innerHTML = releases.length === 0 ? '<p>无版本发布</p>' : '';
     
     releases.forEach(release => {
       const releaseItem = document.createElement('div');
@@ -283,7 +283,7 @@ async function fetchReleases(repoFullName) {
         <div class="release-meta">
           <span><i class="fas fa-tag"></i> ${release.tag_name}</span>
           <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
-          <a href="${release.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+          <a href="${release.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
         </div>
         ${release.body ? `<div class="release-body">${marked.parse(release.body)}</div>` : ''}
       `;
@@ -291,8 +291,8 @@ async function fetchReleases(repoFullName) {
     });
     
   } catch (error) {
-    console.error('Error fetching releases:', error);
-    document.getElementById('releases-list').innerHTML = '<p>Failed to load releases</p>';
+    console.error('获取版本发布时出错:', error);
+    document.getElementById('releases-list').innerHTML = '<p>加载版本发布失败</p>';
   }
 }
 
@@ -306,7 +306,7 @@ async function fetchIssues(repoFullName) {
     );
     
     const issuesList = document.getElementById('issues-list');
-    issuesList.innerHTML = issues.length === 0 ? '<p>No recent issues found</p>' : '';
+    issuesList.innerHTML = issues.length === 0 ? '<p>无最近问题</p>' : '';
     
     issues.forEach(issue => {
       const issueItem = document.createElement('div');
@@ -318,8 +318,8 @@ async function fetchIssues(repoFullName) {
         <div class="issue-meta">
           <span><i class="fas fa-user"></i> ${issue.user.login}</span>
           <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
-          <span><i class="fas fa-comment"></i> ${issue.comments} comments</span>
-          <a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+          <span><i class="fas fa-comment"></i> ${issue.comments} 条评论</span>
+          <a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
         </div>
         ${issue.body ? `<div class="issue-body">${marked.parse(issue.body.substring(0, 200))}...</div>` : ''}
       `;
@@ -327,8 +327,8 @@ async function fetchIssues(repoFullName) {
     });
     
   } catch (error) {
-    console.error('Error fetching issues:', error);
-    document.getElementById('issues-list').innerHTML = '<p>Failed to load issues</p>';
+    console.error('获取问题时出错:', error);
+    document.getElementById('issues-list').innerHTML = '<p>加载问题失败</p>';
   }
 }
 
