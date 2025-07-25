@@ -7,6 +7,14 @@
         {
             "name": "huanhuan0812/runtime1",
             "description": "my first runtime"
+        },
+        {
+            "name": "huanhuan0812/docs",
+            "description": "我的知识库"
+        },
+        {
+            "name": "huanhuan0812/airjumpmod-1.21",
+            "description": "A minecraft mod"
         }
         
     ]
