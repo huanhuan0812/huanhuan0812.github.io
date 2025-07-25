@@ -1,273 +1,686 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>仓库详情</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Existing styles... */
-        .repo-detail {
-            background-color: var(--card-bg);
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-top: 20px;
-            border: 1px solid #e1e4e8;
-        }
-        
-        .repo-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .repo-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        
-        .repo-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-            color: var(--secondary-color);
-        }
-        
-        .repo-description {
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin: 15px 0;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .repo-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .meta-card {
-            background-color: var(--bg-color);
-            padding: 15px;
-            border-radius: 6px;
-        }
-        
-        .meta-card h3 {
-            margin-top: 0;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .meta-card p {
-            margin-bottom: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .back-button i {
-            margin-right: 5px;
-        }
-        
-        .section-title {
-            margin-top: 30px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .readme-content {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-        
-        /* Add new styles for tabs and additional content */
-        .repo-tabs {
-            display: flex;
-            border-bottom: 1px solid #e1e4e8;
-            margin: 20px 0;
-        }
-        
-        .tab-button {
-            padding: 10px 20px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            color: var(--text-secondary);
-            border-bottom: 2px solid transparent;
-        }
-        
-        .tab-button.active {
-            color: var(--secondary-color);
-            border-bottom-color: var(--secondary-color);
-            font-weight: 600;
-        }
-        
-        .tab-content {
-            display: none;
-            padding: 15px 0;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .repo-meta-item {
-            display: inline-block;
-            margin-right: 15px;
-            color: var(--text-secondary);
-        }
-        
-        .repo-meta-item i {
-            margin-right: 5px;
-        }
-        
-        .commit-item, .release-item, .issue-item {
-            padding: 15px 0;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .commit-meta, .release-meta, .issue-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 10px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-        
-        .refresh-btn {
-            margin-left: auto;
-            padding: 8px 15px;
-            background-color: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .refresh-btn:hover {
-            opacity: 0.9;
-        }
-        
-        .cache-status {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 4px;
-            transition: opacity 0.3s;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repository Details</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #0366d6;
+      --bg-color: #f6f8fa;
+      --card-bg: #ffffff;
+      --text-color: #24292e;
+      --border-color: #e1e4e8;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      color: var(--text-color);
+      background-color: var(--bg-color);
+      margin: 0;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+    
+    .repo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .repo-header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .repo-header h1 i {
+      margin-right: 10px;
+      color: var(--primary-color);
+    }
+    
+    .repo-meta {
+      display: flex;
+      gap: 15px;
+    }
+    
+    .repo-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+    
+    .repo-meta-item i {
+      color: var(--primary-color);
+    }
+    
+    .repo-details-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+    }
+    
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .card h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      font-size: 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+    }
+    
+    .repo-links ul, .repo-stats ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .repo-links li, .repo-stats li {
+      margin-bottom: 8px;
+    }
+    
+    .repo-links a {
+      color: var(--primary-color);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .repo-links a:hover {
+      text-decoration: underline;
+    }
+    
+    .repo-stats li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .branch-selector {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background-color: var(--card-bg);
+    }
+    
+    .tags-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      background-color: #f1f8ff;
+      border-radius: 4px;
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 12px;
+      border: 1px solid #d1e5ff;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 16px;
+    }
+    
+    .tab-button {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    .tab-button.active {
+      border-bottom-color: var(--primary-color);
+      font-weight: 600;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .commit-item, .release-item, .issue-item {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .commit-item:last-child, .release-item:last-child, .issue-item:last-child {
+      border-bottom: none;
+    }
+    
+    .commit-message, .issue-item h4, .release-item h4 {
+      margin: 0 0 8px 0;
+      font-weight: 600;
+    }
+    
+    .commit-meta, .release-meta, .issue-meta {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: #586069;
+    }
+    
+    .commit-meta a, .release-meta a, .issue-meta a {
+      color: var(--primary-color);
+      text-decoration: none;
+    }
+    
+    .release-body, .issue-body {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    
+    .load-more {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      margin-top: 16px;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--primary-color);
+    }
+    
+    .load-more:hover {
+      background-color: #f6f8fa;
+    }
+    
+    .refresh-btn {
+      padding: 8px 16px;
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .refresh-btn:hover {
+      background-color: #035fc7;
+    }
+    
+    .cache-status {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #24292e;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: opacity 0.5s;
+    }
+    
+    @media (max-width: 768px) {
+      .repo-details-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-button">
-            <i class="fas fa-arrow-left"></i>返回列表
-        </a>
-
-        <div id="loading">
-            <div class="spinner"></div>
-            <p>正在加载仓库详情...</p>
-        </div>
-
-        <div id="errorMsg" class="error"></div>
-
-        <div id="repoDetail" class="repo-detail" style="display: none;">
-            <div class="repo-header">
-                <img src="" alt="" class="repo-avatar" id="repo-avatar">
-                <div>
-                    <h1 class="repo-title">
-                        <a href="" target="_blank" id="repo-url"><span id="repo-name"></span></a>
-                    </h1>
-                    <div id="repo-meta"></div>
-                </div>
-            </div>
-            
-            <p class="repo-description" id="repo-description"></p>
-            
-            <div class="repo-meta">
-                <div class="meta-card">
-                    <h3>星标数</h3>
-                    <p id="stargazers-count">0</p>
-                </div>
-                <div class="meta-card">
-                    <h3>订阅者</h3>
-                    <p id="watchers-count">0</p>
-                </div>
-                <div class="meta-card">
-                    <h3>分支数</h3>
-                    <p id="forks-count">0</p>
-                </div>
-                <div class="meta-card">
-                    <h3>问题数</h3>
-                    <p id="open-issues">0</p>
-                </div>
-            </div>
-            
-            <div class="repo-tabs">
-                <button class="tab-button active" data-tab="readme">README</button>
-                <button class="tab-button" data-tab="commits">Commits</button>
-                <button class="tab-button" data-tab="branches">Branches</button>
-                <button class="tab-button" data-tab="releases">Releases</button>
-                <button class="tab-button" data-tab="issues">Issues</button>
-                <button class="tab-button" data-tab="tags">Tags</button>
-            </div>
-            
-            <div class="tab-content active" id="readme-tab">
-                <h2 class="section-title">关于</h2>
-                <div class="readme-content" id="readmeContent"></div>
-            </div>
-            
-            <div class="tab-content" id="commits-tab">
-                <h2 class="section-title">Recent Commits</h2>
-                <select id="branch-selector" style="margin-bottom: 15px;"></select>
-                <div id="commits-list"></div>
-                <button id="load-more-commits" style="display: none;">Load More</button>
-            </div>
-            
-            <div class="tab-content" id="branches-tab">
-                <h2 class="section-title">Branches</h2>
-                <div id="branches-list"></div>
-            </div>
-            
-            <div class="tab-content" id="releases-tab">
-                <h2 class="section-title">Releases</h2>
-                <a href="" id="releases-url" target="_blank" style="float: right;">View all releases</a>
-                <div id="releases-list"></div>
-            </div>
-            
-            <div class="tab-content" id="issues-tab">
-                <h2 class="section-title">Recent Issues</h2>
-                <a href="" id="issues-url" target="_blank" style="float: right;">View all issues</a>
-                <div id="issues-list"></div>
-            </div>
-            
-            <div class="tab-content" id="tags-tab">
-                <h2 class="section-title">Tags</h2>
-                <div id="tags-list"></div>
-            </div>
-        </div>
+  <div class="container">
+    <div class="repo-header">
+      <h1 id="repo-name">
+        <i class="fab fa-github"></i>
+        <span>Repository Details</span>
+      </h1>
+      <div class="repo-meta" id="repo-meta">
+        <!-- 动态加载的仓库元数据 -->
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="details.js"></script>
+    <div class="repo-details-grid">
+      <!-- 左侧栏 -->
+      <div class="repo-sidebar">
+        <div class="repo-links card">
+          <h3>Links</h3>
+          <ul>
+            <li><a id="repo-url" target="_blank"><i class="fas fa-external-link-alt"></i> Repository</a></li>
+            <li><a id="releases-url" target="_blank"><i class="fas fa-tag"></i> Releases</a></li>
+            <li><a id="issues-url" target="_blank"><i class="fas fa-exclamation-circle"></i> Issues</a></li>
+            <li><a id="pulls-url" target="_blank"><i class="fas fa-code-branch"></i> Pull Requests</a></li>
+          </ul>
+        </div>
+
+        <div class="repo-stats card">
+          <h3>Statistics</h3>
+          <ul>
+            <li><i class="far fa-star"></i> <span id="stargazers-count">-</span> Stars</li>
+            <li><i class="far fa-eye"></i> <span id="watchers-count">-</span> Watchers</li>
+            <li><i class="fas fa-code-branch"></i> <span id="forks-count">-</span> Forks</li>
+            <li><i class="far fa-dot-circle"></i> <span id="open-issues">-</span> Open Issues</li>
+          </ul>
+        </div>
+
+        <div class="branches card">
+          <h3>Branches</h3>
+          <select id="branch-selector" class="branch-selector">
+            <option value="">Loading branches...</option>
+          </select>
+        </div>
+
+        <div class="tags card">
+          <h3>Tags</h3>
+          <div id="tags-list" class="tags-list">
+            <p>Loading tags...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 主要内容 -->
+      <div class="repo-content">
+        <div class="repo-description card">
+          <h3>Description</h3>
+          <p id="repo-description">Loading description...</p>
+        </div>
+
+        <div class="repo-activity card">
+          <div class="tabs">
+            <button class="tab-button active" data-tab="commits">Commits</button>
+            <button class="tab-button" data-tab="releases">Releases</button>
+            <button class="tab-button" data-tab="issues">Recent Issues</button>
+          </div>
+
+          <div id="commits-tab" class="tab-content active">
+            <h3>Recent Commits</h3>
+            <div id="commits-list"></div>
+            <button id="load-more-commits" class="load-more">Load More</button>
+          </div>
+
+          <div id="releases-tab" class="tab-content">
+            <h3>Recent Releases</h3>
+            <div id="releases-list"></div>
+          </div>
+
+          <div id="issues-tab" class="tab-content">
+            <h3>Recent Issues</h3>
+            <div id="issues-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+    // 缓存系统
+    const cache = {
+      repoData: {},
+      branches: {},
+      tags: {},
+      commits: {},
+      releases: {},
+      issues: {},
+      lastUpdated: {}
+    };
+
+    const CACHE_EXPIRY = 60 * 60 * 1000; // 1小时缓存
+
+    // 初始化加载缓存
+    function loadCacheFromStorage() {
+      const keys = ['repoData', 'branches', 'tags', 'commits', 'releases', 'issues'];
+      keys.forEach(key => {
+        const data = localStorage.getItem(key);
+        const lastUpdated = localStorage.getItem(`${key}_lastUpdated`);
+        if (data && lastUpdated) {
+          cache[key] = JSON.parse(data);
+          cache.lastUpdated[key] = parseInt(lastUpdated);
+        }
+      });
+    }
+
+    function isCacheValid(key) {
+      return cache[key] && cache.lastUpdated[key] && (Date.now() - cache.lastUpdated[key] < CACHE_EXPIRY);
+    }
+
+    async function cachedFetch(url, cacheKey) {
+      // 检查内存缓存
+      if (isCacheValid(cacheKey)) {
+        console.log(`Using cached data for ${cacheKey}`);
+        showCacheStatus();
+        return cache[cacheKey];
+      }
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const data = await response.json();
+        // 更新缓存
+        cache[cacheKey] = data;
+        cache.lastUpdated[cacheKey] = Date.now();
+        localStorage.setItem(cacheKey, JSON.stringify(data));
+        localStorage.setItem(`${cacheKey}_lastUpdated`, Date.now());
+        
+        return data;
+      } catch (error) {
+        console.error(`Error fetching ${cacheKey}:`, error);
+        // 尝试使用localStorage缓存
+        const storedData = localStorage.getItem(cacheKey);
+        if (storedData) {
+          console.log(`Falling back to localStorage for ${cacheKey}`);
+          return JSON.parse(storedData);
+        }
+        throw error;
+      }
+    }
+
+    function showCacheStatus() {
+      const existingStatus = document.querySelector('.cache-status');
+      if (existingStatus) existingStatus.remove();
+
+      const status = document.createElement('div');
+      status.className = 'cache-status';
+      status.textContent = 'Using cached data';
+      document.body.appendChild(status);
+      
+      setTimeout(() => {
+        status.style.opacity = '0';
+        setTimeout(() => status.remove(), 500);
+      }, 2000);
+    }
+
+    // 页面加载
+    document.addEventListener('DOMContentLoaded', function() {
+      loadCacheFromStorage();
+      addRefreshButton();
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const repoFullName = urlParams.get('repo');
+      
+      if (!repoFullName) {
+        window.location.href = '/';
+        return;
+      }
+
+      // 设置基本信息
+      const [owner, repo] = repoFullName.split('/');
+      document.getElementById('repo-name').querySelector('span').textContent = repo;
+      
+      // 设置链接
+      document.getElementById('repo-url').href = `https://github.com/${repoFullName}`;
+      document.getElementById('releases-url').href = `https://github.com/${repoFullName}/releases`;
+      document.getElementById('issues-url').href = `https://github.com/${repoFullName}/issues`;
+      document.getElementById('pulls-url').href = `https://github.com/${repoFullName}/pulls`;
+
+      // 获取数据
+      fetchRepoDetails(repoFullName);
+      setupTabs();
+    });
+
+    function addRefreshButton() {
+      const header = document.querySelector('.repo-header');
+      const refreshBtn = document.createElement('button');
+      refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh';
+      refreshBtn.className = 'refresh-btn';
+      refreshBtn.onclick = () => {
+        Object.keys(cache).forEach(key => delete cache[key]);
+        localStorage.clear();
+        location.reload();
+      };
+      header.appendChild(refreshBtn);
+    }
+
+    async function fetchRepoDetails(repoFullName) {
+      const cacheKey = `repoData_${repoFullName}`;
+      
+      try {
+        const repoData = await cachedFetch(`https://api.github.com/repos/${repoFullName}`, cacheKey);
+        
+        document.getElementById('repo-description').textContent = repoData.description || 'No description provided';
+        document.getElementById('stargazers-count').textContent = repoData.stargazers_count;
+        document.getElementById('watchers-count').textContent = repoData.watchers_count;
+        document.getElementById('forks-count').textContent = repoData.forks_count;
+        document.getElementById('open-issues').textContent = repoData.open_issues_count;
+        
+        const metaContainer = document.getElementById('repo-meta');
+        metaContainer.innerHTML = `
+          <span class="repo-meta-item"><i class="fas fa-code"></i> ${repoData.language || 'Unknown'}</span>
+          <span class="repo-meta-item"><i class="fas fa-calendar-alt"></i> ${new Date(repoData.created_at).toLocaleDateString()}</span>
+          <span class="repo-meta-item"><i class="fas fa-sync-alt"></i> ${new Date(repoData.updated_at).toLocaleDateString()}</span>
+        `;
+        
+        fetchBranches(repoFullName);
+        fetchCommits(repoFullName);
+        fetchReleases(repoFullName);
+        fetchIssues(repoFullName);
+        fetchTags(repoFullName);
+        
+      } catch (error) {
+        console.error('Error fetching repo details:', error);
+        document.getElementById('repo-description').textContent = 'Failed to load repository details';
+      }
+    }
+
+    async function fetchBranches(repoFullName) {
+      const cacheKey = `branches_${repoFullName}`;
+      
+      try {
+        const branches = await cachedFetch(`https://api.github.com/repos/${repoFullName}/branches`, cacheKey);
+        const branchSelector = document.getElementById('branch-selector');
+        branchSelector.innerHTML = '';
+        
+        branches.forEach(branch => {
+          const option = document.createElement('option');
+          option.value = branch.name;
+          option.textContent = branch.name;
+          branchSelector.appendChild(option);
+        });
+        
+        const defaultBranch = branches.find(b => b.name === 'main' || b.name === 'master');
+        if (defaultBranch) branchSelector.value = defaultBranch.name;
+        
+        branchSelector.addEventListener('change', () => {
+          fetchCommits(repoFullName, branchSelector.value);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching branches:', error);
+        document.getElementById('branch-selector').innerHTML = '<option value="">Failed to load branches</option>';
+      }
+    }
+
+    async function fetchTags(repoFullName) {
+      const cacheKey = `tags_${repoFullName}`;
+      
+      try {
+        const tags = await cachedFetch(`https://api.github.com/repos/${repoFullName}/tags`, cacheKey);
+        const tagsList = document.getElementById('tags-list');
+        
+        if (tags.length === 0) {
+          tagsList.innerHTML = '<p>No tags found</p>';
+          return;
+        }
+        
+        tagsList.innerHTML = '';
+        tags.slice(0, 10).forEach(tag => {
+          const tagElement = document.createElement('a');
+          tagElement.className = 'tag';
+          tagElement.href = `https://github.com/${repoFullName}/releases/tag/${tag.name}`;
+          tagElement.target = '_blank';
+          tagElement.title = tag.name;
+          tagElement.innerHTML = `<i class="fas fa-tag"></i><span>${tag.name}</span>`;
+          tagsList.appendChild(tagElement);
+        });
+        
+        if (tags.length > 10) {
+          const moreLink = document.createElement('a');
+          moreLink.className = 'tag';
+          moreLink.href = `https://github.com/${repoFullName}/tags`;
+          moreLink.target = '_blank';
+          moreLink.textContent = `+${tags.length - 10} more`;
+          tagsList.appendChild(moreLink);
+        }
+        
+      } catch (error) {
+        console.error('Error fetching tags:', error);
+        document.getElementById('tags-list').innerHTML = '<p>Failed to load tags</p>';
+      }
+    }
+
+    let currentPage = 1;
+    async function fetchCommits(repoFullName, branch = 'main') {
+      const cacheKey = `commits_${repoFullName}_${branch}_${currentPage}`;
+      
+      try {
+        const commits = await cachedFetch(
+          `https://api.github.com/repos/${repoFullName}/commits?sha=${branch}&page=${currentPage}&per_page=10`,
+          cacheKey
+        );
+        
+        const commitsList = document.getElementById('commits-list');
+        if (currentPage === 1) commitsList.innerHTML = '';
+        
+        if (commits.length === 0) {
+          if (currentPage === 1) commitsList.innerHTML = '<p>No commits found</p>';
+          document.getElementById('load-more-commits').style.display = 'none';
+          return;
+        }
+        
+        commits.forEach(commit => {
+          const commitItem = document.createElement('div');
+          commitItem.className = 'commit-item';
+          const message = commit.commit.message.split('\n')[0];
+          const date = new Date(commit.commit.author.date);
+          
+          commitItem.innerHTML = `
+            <div class="commit-message">${message}</div>
+            <div class="commit-meta">
+              <span><i class="fas fa-user"></i> ${commit.commit.author.name}</span>
+              <span><i class="far fa-calendar-alt"></i> ${date.toLocaleString()}</span>
+              <a href="${commit.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+            </div>
+          `;
+          commitsList.appendChild(commitItem);
+        });
+        
+        document.getElementById('load-more-commits').style.display = 'block';
+        document.getElementById('load-more-commits').onclick = () => {
+          currentPage++;
+          fetchCommits(repoFullName, branch);
+        };
+        
+      } catch (error) {
+        console.error('Error fetching commits:', error);
+        document.getElementById('commits-list').innerHTML = '<p>Failed to load commits</p>';
+      }
+    }
+
+    async function fetchReleases(repoFullName) {
+      const cacheKey = `releases_${repoFullName}`;
+      
+      try {
+        const releases = await cachedFetch(
+          `https://api.github.com/repos/${repoFullName}/releases?per_page=5`,
+          cacheKey
+        );
+        
+        const releasesList = document.getElementById('releases-list');
+        releasesList.innerHTML = releases.length === 0 ? '<p>No releases found</p>' : '';
+        
+        releases.forEach(release => {
+          const releaseItem = document.createElement('div');
+          releaseItem.className = 'release-item';
+          const date = new Date(release.published_at);
+          
+          releaseItem.innerHTML = `
+            <h4>${release.name || release.tag_name}</h4>
+            <div class="release-meta">
+              <span><i class="fas fa-tag"></i> ${release.tag_name}</span>
+              <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
+              <a href="${release.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+            </div>
+            ${release.body ? `<div class="release-body">${marked.parse(release.body)}</div>` : ''}
+          `;
+          releasesList.appendChild(releaseItem);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching releases:', error);
+        document.getElementById('releases-list').innerHTML = '<p>Failed to load releases</p>';
+      }
+    }
+
+    async function fetchIssues(repoFullName) {
+      const cacheKey = `issues_${repoFullName}`;
+      
+      try {
+        const issues = await cachedFetch(
+          `https://api.github.com/repos/${repoFullName}/issues?per_page=5`,
+          cacheKey
+        );
+        
+        const issuesList = document.getElementById('issues-list');
+        issuesList.innerHTML = issues.length === 0 ? '<p>No recent issues found</p>' : '';
+        
+        issues.forEach(issue => {
+          const issueItem = document.createElement('div');
+          issueItem.className = 'issue-item';
+          const date = new Date(issue.created_at);
+          
+          issueItem.innerHTML = `
+            <h4>${issue.title}</h4>
+            <div class="issue-meta">
+              <span><i class="fas fa-user"></i> ${issue.user.login}</span>
+              <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
+              <span><i class="fas fa-comment"></i> ${issue.comments} comments</span>
+              <a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> View</a>
+            </div>
+            ${issue.body ? `<div class="issue-body">${marked.parse(issue.body.substring(0, 200))}...</div>` : ''}
+          `;
+          issuesList.appendChild(issueItem);
+        });
+        
+      } catch (error) {
+        console.error('Error fetching issues:', error);
+        document.getElementById('issues-list').innerHTML = '<p>Failed to load issues</p>';
+      }
+    }
+
+    function setupTabs() {
+      const tabButtons = document.querySelectorAll('.tab-button');
+      const tabContents = document.querySelectorAll('.tab-content');
+      
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          tabContents.forEach(content => content.classList.remove('active'));
+          button.classList.add('active');
+          document.getElementById(`${button.dataset.tab}-tab`).classList.add('active');
+        });
+      });
+    }
+  </script>
 </body>
 </html>
