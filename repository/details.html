@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Repository Details</title>
+  <title>仓库详情</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="details.css">
 </head>
 <body>
   <div class="container">
     <div class="repo-header">
       <h1 id="repo-name">
         <i class="fab fa-github"></i>
-        <span>Repository Details</span>
+        <span>仓库详情</span>
       </h1>
       <div class="repo-meta" id="repo-meta">
         <!-- 动态加载的仓库元数据 -->
@@ -23,36 +23,36 @@
       <!-- 左侧栏 -->
       <div class="repo-sidebar">
         <div class="repo-links card">
-          <h3>Links</h3>
+          <h3>链接</h3>
           <ul>
-            <li><a id="repo-url" target="_blank"><i class="fas fa-external-link-alt"></i> Repository</a></li>
-            <li><a id="releases-url" target="_blank"><i class="fas fa-tag"></i> Releases</a></li>
-            <li><a id="issues-url" target="_blank"><i class="fas fa-exclamation-circle"></i> Issues</a></li>
-            <li><a id="pulls-url" target="_blank"><i class="fas fa-code-branch"></i> Pull Requests</a></li>
+            <li><a id="repo-url" target="_blank"><i class="fas fa-external-link-alt"></i> 仓库</a></li>
+            <li><a id="releases-url" target="_blank"><i class="fas fa-tag"></i> 版本</a></li>
+            <li><a id="issues-url" target="_blank"><i class="fas fa-exclamation-circle"></i> 问题</a></li>
+            <li><a id="pulls-url" target="_blank"><i class="fas fa-code-branch"></i> 拉取请求</a></li>
           </ul>
         </div>
 
         <div class="repo-stats card">
-          <h3>Statistics</h3>
+          <h3>统计</h3>
           <ul>
-            <li><i class="far fa-star"></i> <span id="stargazers-count">-</span> Stars</li>
-            <li><i class="far fa-eye"></i> <span id="watchers-count">-</span> Watchers</li>
-            <li><i class="fas fa-code-branch"></i> <span id="forks-count">-</span> Forks</li>
-            <li><i class="far fa-dot-circle"></i> <span id="open-issues">-</span> Open Issues</li>
+            <li><i class="far fa-star"></i> <span id="stargazers-count">-</span> 星标</li>
+            <li><i class="far fa-eye"></i> <span id="watchers-count">-</span> 关注者</li>
+            <li><i class="fas fa-code-branch"></i> <span id="forks-count">-</span> 复刻</li>
+            <li><i class="far fa-dot-circle"></i> <span id="open-issues">-</span> 未解决问题</li>
           </ul>
         </div>
 
         <div class="branches card">
-          <h3>Branches</h3>
+          <h3>分支</h3>
           <select id="branch-selector" class="branch-selector">
-            <option value="">Loading branches...</option>
+            <option value="">加载分支中...</option>
           </select>
         </div>
 
         <div class="tags card">
-          <h3>Tags</h3>
+          <h3>标签</h3>
           <div id="tags-list" class="tags-list">
-            <p>Loading tags...</p>
+            <p>加载标签中...</p>
           </div>
         </div>
       </div>
@@ -60,30 +60,30 @@
       <!-- 主要内容 -->
       <div class="repo-content">
         <div class="repo-description card">
-          <h3>Description</h3>
-          <p id="repo-description">Loading description...</p>
+          <h3>描述</h3>
+          <p id="repo-description">加载描述中...</p>
         </div>
 
         <div class="repo-activity card">
           <div class="tabs">
-            <button class="tab-button active" data-tab="commits">Commits</button>
-            <button class="tab-button" data-tab="releases">Releases</button>
-            <button class="tab-button" data-tab="issues">Recent Issues</button>
+            <button class="tab-button active" data-tab="commits">提交</button>
+            <button class="tab-button" data-tab="releases">版本</button>
+            <button class="tab-button" data-tab="issues">最近问题</button>
           </div>
 
           <div id="commits-tab" class="tab-content active">
-            <h3>Recent Commits</h3>
+            <h3>最近提交</h3>
             <div id="commits-list"></div>
-            <button id="load-more-commits" class="load-more">Load More</button>
+            <button id="load-more-commits" class="load-more">加载更多</button>
           </div>
 
           <div id="releases-tab" class="tab-content">
-            <h3>Recent Releases</h3>
+            <h3>最近版本</h3>
             <div id="releases-list"></div>
           </div>
 
           <div id="issues-tab" class="tab-content">
-            <h3>Recent Issues</h3>
+            <h3>最近问题</h3>
             <div id="issues-list"></div>
           </div>
         </div>
