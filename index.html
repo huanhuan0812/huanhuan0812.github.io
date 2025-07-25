@@ -1,14 +1,146 @@
----
-layout: default
----
-
-<div class="container">
-    <h1>My Projects</h1>
-    <div class="cards-container">
-        {% for repo in site.data.repositories %}
-        {% include card.html repo=repo %}
-        {% endfor %}
-    </div>
-</div>
-
-<script src="/assets/js/main.js"></script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>_huanhuan_的个人主页</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f8ff;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: #1e90ff;
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 2rem;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .nav-links a:hover {
+            color: #003366;
+            border-bottom: 2px solid white;
+        }
+        
+        main {
+            padding: 3rem 0;
+            text-align: center;
+            min-height: 70vh;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1e90ff;
+        }
+        
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #555;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #1e90ff;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .btn:hover {
+            background-color: white;
+            color: #1e90ff;
+            border: 2px solid #1e90ff;
+        }
+        
+        footer {
+            background-color: #1e90ff;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">_huanhuan_的主页</div>
+                <ul class="nav-links">
+                    <li><a href="./source/index.html">知识库</a></li>
+                    <li><a href="about.html">关于我</a></li>
+                    <li><a href="services.html">项目</a></li>
+                    <li><a href="contact.html">联系</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <h1>欢迎来到我的个人主页</h1>
+            <p>这里是我的个人空间，分享我的知识和项目。</p>
+            <a href="./source/index.html" class="btn">访问知识库</a>
+        </div>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 _huanhuan_. 保留所有权利.</p>
+        </div>
+    </footer>
+</body>
+</html>
