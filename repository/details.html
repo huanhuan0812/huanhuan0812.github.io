@@ -6,6 +6,7 @@
     <title>仓库详情</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .repo-detail {
             background-color: var(--card-bg);
@@ -93,6 +94,114 @@
             border-radius: 6px;
             margin-top: 15px;
         }
+        
+        .tab-container {
+            margin-top: 20px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e1e4e8;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            border-bottom-color: var(--secondary-color);
+            color: var(--secondary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .contributors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .contributor-card {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            transition: transform 0.2s;
+        }
+        
+        .contributor-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .contributor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .releases-list {
+            margin-top: 15px;
+        }
+        
+        .release-item {
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-radius: 6px;
+            margin-bottom: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .release-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .release-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .release-body {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e1e4e8;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            background-color: var(--bg-color);
+            border-radius: 6px;
+        }
     </style>
 </head>
 <body>
@@ -109,7 +218,67 @@
         <div id="errorMsg" class="error"></div>
 
         <div id="repoDetail" class="repo-detail" style="display: none;">
-            <!-- 动态内容将在这里填充 -->
+            <div class="repo-header">
+                <img id="repoAvatar" src="" alt="" class="repo-avatar">
+                <div>
+                    <h1 class="repo-title">
+                        <a id="repoLink" href="" target="_blank"></a>
+                    </h1>
+                    <p>创建于: <span id="createdDate"></span> | 最后更新: <span id="lastUpdated"></span></p>
+                </div>
+            </div>
+            
+            <p class="repo-description" id="repoDescription"></p>
+            
+            <div class="repo-meta" id="repoMeta">
+                <!-- 动态生成元数据卡片 -->
+            </div>
+            
+            <div class="tab-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="readme">README</div>
+                    <div class="tab" data-tab="contributors">贡献者</div>
+                    <div class="tab" data-tab="releases">发布版本</div>
+                    <div class="tab" data-tab="stats">统计</div>
+                    <div class="tab" data-tab="community">社区</div>
+                </div>
+                
+                <div id="readmeTab" class="tab-content active">
+                    <div class="readme-content" id="readmeContent"></div>
+                </div>
+                
+                <div id="contributorsTab" class="tab-content">
+                    <div class="contributors-grid" id="contributorsGrid"></div>
+                </div>
+                
+                <div id="releasesTab" class="tab-content">
+                    <div class="releases-list" id="releasesList"></div>
+                </div>
+                
+                <div id="statsTab" class="tab-content">
+                    <h3 class="section-title">代码提交频率</h3>
+                    <div class="chart-container">
+                        <canvas id="codeFrequencyChart"></canvas>
+                    </div>
+                    
+                    <h3 class="section-title">提交活动</h3>
+                    <div class="chart-container">
+                        <canvas id="commitActivityChart"></canvas>
+                    </div>
+                    
+                    <h3 class="section-title">其他统计</h3>
+                    <div class="stats-grid" id="statsGrid"></div>
+                </div>
+                
+                <div id="communityTab" class="tab-content">
+                    <h3 class="section-title">社区健康</h3>
+                    <div class="chart-container">
+                        <canvas id="communityChart"></canvas>
+                    </div>
+                    
+                    <div class="stats-grid" id="communityGrid"></div>
+                </div>
+            </div>
         </div>
     </div>
 
