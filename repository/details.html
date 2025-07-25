@@ -1,4 +1,3 @@
-<!-- details.html -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -8,203 +7,86 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <style>
-        .repo-detail {
-            background-color: var(--card-bg);
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            margin-top: 20px;
-            border: 1px solid #e1e4e8;
-        }
+        /* Existing styles... */
         
-        .repo-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .repo-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-right: 20px;
-        }
-        
-        .repo-title {
-            font-size: 24px;
-            font-weight: 600;
-            margin: 0;
-            color: var(--secondary-color);
-        }
-        
-        .repo-description {
-            font-size: 18px;
-            color: var(--text-secondary);
-            margin: 15px 0;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .repo-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .meta-card {
-            background-color: var(--bg-color);
-            padding: 15px;
-            border-radius: 6px;
-        }
-        
-        .meta-card h3 {
-            margin-top: 0;
-            color: var(--text-secondary);
-            font-size: 14px;
-        }
-        
-        .meta-card p {
-            margin-bottom: 0;
-            font-size: 18px;
-            font-weight: 600;
-        }
-        
-        .back-button {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-        
-        .back-button i {
-            margin-right: 5px;
-        }
-        
-        .section-title {
-            margin-top: 30px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #e1e4e8;
-        }
-        
-        .readme-content {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-        
-        /* 新增样式 */
-        .refresh-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .refresh-btn:hover {
-            opacity: 0.9;
-        }
-        
-        .tabs {
+        /* Add new styles for tabs and additional content */
+        .repo-tabs {
             display: flex;
             border-bottom: 1px solid #e1e4e8;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
         
         .tab-button {
             padding: 10px 20px;
             background: none;
             border: none;
-            border-bottom: 2px solid transparent;
             cursor: pointer;
             font-size: 16px;
             color: var(--text-secondary);
+            border-bottom: 2px solid transparent;
         }
         
         .tab-button.active {
-            border-bottom-color: var(--secondary-color);
             color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
             font-weight: 600;
         }
         
         .tab-content {
             display: none;
+            padding: 15px 0;
         }
         
         .tab-content.active {
             display: block;
         }
         
-        .commits-controls {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+        .repo-meta-item {
+            display: inline-block;
+            margin-right: 15px;
+            color: var(--text-secondary);
         }
         
-        .branch-selector {
-            padding: 8px;
-            border-radius: 4px;
-            border: 1px solid #e1e4e8;
-        }
-        
-        .load-more {
-            padding: 8px 15px;
-            background: var(--secondary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .repo-meta-item i {
+            margin-right: 5px;
         }
         
         .commit-item, .release-item, .issue-item {
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: var(--card-bg);
-            border-radius: 6px;
-            border: 1px solid #e1e4e8;
+            padding: 15px 0;
+            border-bottom: 1px solid #e1e4e8;
         }
         
         .commit-meta, .release-meta, .issue-meta {
             display: flex;
+            flex-wrap: wrap;
             gap: 15px;
             margin-top: 10px;
             font-size: 14px;
             color: var(--text-secondary);
         }
         
-        .tags-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .refresh-btn {
+            margin-left: auto;
+            padding: 8px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
         }
         
-        .tag {
-            display: inline-block;
-            padding: 5px 10px;
-            background-color: var(--bg-color);
-            border-radius: 4px;
-            color: var(--secondary-color);
-            text-decoration: none;
+        .refresh-btn:hover {
+            opacity: 0.9;
         }
         
         .cache-status {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: var(--secondary-color);
+            background-color: var(--secondary-color);
             color: white;
             padding: 10px 15px;
             border-radius: 4px;
-            z-index: 1000;
             transition: opacity 0.3s;
         }
     </style>
@@ -223,10 +105,83 @@
         <div id="errorMsg" class="error"></div>
 
         <div id="repoDetail" class="repo-detail" style="display: none;">
-            <!-- 动态内容将在这里填充 -->
+            <div class="repo-header">
+                <img src="" alt="" class="repo-avatar" id="repo-avatar">
+                <div>
+                    <h1 class="repo-title">
+                        <a href="" target="_blank" id="repo-url"><span id="repo-name"></span></a>
+                    </h1>
+                    <div id="repo-meta"></div>
+                </div>
+            </div>
+            
+            <p class="repo-description" id="repo-description"></p>
+            
+            <div class="repo-meta">
+                <div class="meta-card">
+                    <h3>星标数</h3>
+                    <p id="stargazers-count">0</p>
+                </div>
+                <div class="meta-card">
+                    <h3>订阅者</h3>
+                    <p id="watchers-count">0</p>
+                </div>
+                <div class="meta-card">
+                    <h3>分支数</h3>
+                    <p id="forks-count">0</p>
+                </div>
+                <div class="meta-card">
+                    <h3>问题数</h3>
+                    <p id="open-issues">0</p>
+                </div>
+            </div>
+            
+            <div class="repo-tabs">
+                <button class="tab-button active" data-tab="readme">README</button>
+                <button class="tab-button" data-tab="commits">Commits</button>
+                <button class="tab-button" data-tab="branches">Branches</button>
+                <button class="tab-button" data-tab="releases">Releases</button>
+                <button class="tab-button" data-tab="issues">Issues</button>
+                <button class="tab-button" data-tab="tags">Tags</button>
+            </div>
+            
+            <div class="tab-content active" id="readme-tab">
+                <h2 class="section-title">关于</h2>
+                <div class="readme-content" id="readmeContent"></div>
+            </div>
+            
+            <div class="tab-content" id="commits-tab">
+                <h2 class="section-title">Recent Commits</h2>
+                <select id="branch-selector" style="margin-bottom: 15px;"></select>
+                <div id="commits-list"></div>
+                <button id="load-more-commits" style="display: none;">Load More</button>
+            </div>
+            
+            <div class="tab-content" id="branches-tab">
+                <h2 class="section-title">Branches</h2>
+                <div id="branches-list"></div>
+            </div>
+            
+            <div class="tab-content" id="releases-tab">
+                <h2 class="section-title">Releases</h2>
+                <a href="" id="releases-url" target="_blank" style="float: right;">View all releases</a>
+                <div id="releases-list"></div>
+            </div>
+            
+            <div class="tab-content" id="issues-tab">
+                <h2 class="section-title">Recent Issues</h2>
+                <a href="" id="issues-url" target="_blank" style="float: right;">View all issues</a>
+                <div id="issues-list"></div>
+            </div>
+            
+            <div class="tab-content" id="tags-tab">
+                <h2 class="section-title">Tags</h2>
+                <div id="tags-list"></div>
+            </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="details.js"></script>
 </body>
 </html>
