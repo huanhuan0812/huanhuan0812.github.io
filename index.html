@@ -6,10 +6,10 @@
     <title>_huanhuan_的个人主页</title>
     <style>
         :root {
-            --primary-color: #2563eb; /* 主蓝色 */
-            --secondary-color: #1e40af; /* 深蓝色 */
-            --text-color: #1f2937; /* 正文颜色 */
-            --light-bg: #f9fafb; /* 浅色背景 */
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --text-color: #1f2937;
+            --light-bg: #f9fafb;
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         
@@ -21,9 +21,16 @@
         }
         
         body {
-            background-color: white; /* 纯白背景 */
+            background-color: white;
             color: var(--text-color);
             line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        
+        /* 当侧边栏打开时，主内容偏移 */
+        body.sidebar-open {
+            transform: translateX(250px);
+            overflow: hidden;
         }
         
         header {
@@ -53,12 +60,14 @@
             color: var(--text-color);
             text-decoration: none;
             transition: color 0.3s ease;
+            z-index: 101;
         }
         
         .logo:hover {
             color: var(--primary-color);
         }
         
+        /* 桌面导航样式 */
         .nav-links {
             display: flex;
             list-style: none;
@@ -80,6 +89,101 @@
         .nav-links a:hover {
             color: var(--primary-color);
             border-bottom: 2px solid var(--primary-color);
+        }
+        
+        /* 汉堡菜单按钮 - 默认隐藏 */
+        .hamburger {
+            display: none;
+            cursor: pointer;
+            width: 24px;
+            height: 24px;
+            position: relative;
+            z-index: 101;
+        }
+        
+        .hamburger span {
+            display: block;
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: var(--text-color);
+            border-radius: 2px;
+            opacity: 1;
+            left: 0;
+            transform: rotate(0deg);
+            transition: .25s ease-in-out;
+        }
+        
+        .hamburger span:nth-child(1) {
+            top: 6px;
+        }
+        
+        .hamburger span:nth-child(2), .hamburger span:nth-child(3) {
+            top: 12px;
+        }
+        
+        .hamburger span:nth-child(4) {
+            top: 18px;
+        }
+        
+        /* 当菜单打开时，汉堡图标变为X */
+        .hamburger.open span:nth-child(1) {
+            top: 12px;
+            width: 0%;
+            left: 50%;
+        }
+        
+        .hamburger.open span:nth-child(2) {
+            transform: rotate(45deg);
+        }
+        
+        .hamburger.open span:nth-child(3) {
+            transform: rotate(-45deg);
+        }
+        
+        .hamburger.open span:nth-child(4) {
+            top: 12px;
+            width: 0%;
+            left: 50%;
+        }
+        
+        /* 侧边导航栏 - 默认隐藏 */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 100;
+            padding-top: 70px;
+        }
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
+        .sidebar-links {
+            list-style: none;
+            padding: 0 1.5rem;
+        }
+        
+        .sidebar-links li {
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+        
+        .sidebar-links a:hover {
+            color: var(--primary-color);
         }
         
         main {
@@ -130,6 +234,29 @@
             border-top: 1px solid #e5e7eb;
             font-size: 0.9rem;
         }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            /* 隐藏桌面导航 */
+            .nav-links {
+                display: none;
+            }
+            
+            /* 显示汉堡菜单 */
+            .hamburger {
+                display: block;
+            }
+            
+            /* 调整标题大小 */
+            h1 {
+                font-size: 2rem;
+            }
+            
+            /* 调整内容容器宽度 */
+            .container {
+                width: 95%;
+            }
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
@@ -138,6 +265,12 @@
         <div class="container">
             <nav>
                 <a href="#" class="logo">_huanhuan_的主页</a>
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
                 <ul class="nav-links">
                     <li><a href="./source/index.html">知识库</a></li>
                     <li><a href="about.html">关于我</a></li>
@@ -147,6 +280,16 @@
             </nav>
         </div>
     </header>
+    
+    <!-- 侧边栏导航 -->
+    <div class="sidebar" id="sidebar">
+        <ul class="sidebar-links">
+            <li><a href="./source/index.html">知识库</a></li>
+            <li><a href="about.html">关于我</a></li>
+            <li><a href="services.html">项目</a></li>
+            <li><a href="contact.html">联系</a></li>
+        </ul>
+    </div>
     
     <main>
         <div class="container">
@@ -161,5 +304,29 @@
             <p>&copy; 2023 _huanhuan_. 保留所有权利.</p>
         </div>
     </footer>
+    
+    <script>
+        // 获取DOM元素
+        const hamburger = document.getElementById('hamburger');
+        const sidebar = document.getElementById('sidebar');
+        const body = document.body;
+        
+        // 点击汉堡菜单切换侧边栏
+        hamburger.addEventListener('click', function() {
+            this.classList.toggle('open');
+            sidebar.classList.toggle('open');
+            body.classList.toggle('sidebar-open');
+        });
+        
+        // 点击侧边栏链接关闭侧边栏
+        const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                hamburger.classList.remove('open');
+                sidebar.classList.remove('open');
+                body.classList.remove('sidebar-open');
+            });
+        });
+    </script>
 </body>
 </html>
