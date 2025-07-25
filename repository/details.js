@@ -1,7 +1,22 @@
+// details.js
 document.addEventListener('DOMContentLoaded', function() {
     const loadingDiv = document.getElementById('loading');
     const errorMsgDiv = document.getElementById('errorMsg');
     const repoDetailDiv = document.getElementById('repoDetail');
+    const tabsContainer = document.getElementById('tabsContainer');
+    
+    // 缓存系统
+    const cache = {
+        repoData: {},
+        branches: {},
+        tags: {},
+        commits: {},
+        releases: {},
+        issues: {},
+        lastUpdated: {}
+    };
+    
+    const CACHE_EXPIRY = 60 * 60 * 1000; // 1小时缓存
     
     // 从URL参数获取仓库名称
     const urlParams = new URLSearchParams(window.location.search);
@@ -12,26 +27,89 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // 初始化标签页切换
-    initTabs();
-    
+    // 初始化加载缓存
+    loadCacheFromStorage();
     // 加载仓库详情
     loadRepoDetails(repoName);
+    // 添加刷新按钮
+    addRefreshButton();
     
-    function initTabs() {
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                // 移除所有active类
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // 添加active类到当前标签
-                tab.classList.add('active');
-                const tabId = `${tab.dataset.tab}Tab`;
-                document.getElementById(tabId).classList.add('active');
-            });
+    function loadCacheFromStorage() {
+        const keys = ['repoData', 'branches', 'tags', 'commits', 'releases', 'issues'];
+        keys.forEach(key => {
+            const data = localStorage.getItem(`${key}_${repoName}`);
+            const lastUpdated = localStorage.getItem(`${key}_${repoName}_lastUpdated`);
+            if (data && lastUpdated) {
+                cache[key] = JSON.parse(data);
+                cache.lastUpdated[key] = parseInt(lastUpdated);
+            }
         });
+    }
+    
+    function isCacheValid(key) {
+        return cache[key] && cache.lastUpdated[key] && (Date.now() - cache.lastUpdated[key] < CACHE_EXPIRY);
+    }
+    
+    async function cachedFetch(url, cacheKey) {
+        // 检查内存缓存
+        if (isCacheValid(cacheKey)) {
+            console.log(`Using cached data for ${cacheKey}`);
+            showCacheStatus();
+            return cache[cacheKey];
+        }
+    
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const data = await response.json();
+            // 更新缓存
+            cache[cacheKey] = data;
+            cache.lastUpdated[cacheKey] = Date.now();
+            localStorage.setItem(`${cacheKey}_${repoName}`, JSON.stringify(data));
+            localStorage.setItem(`${cacheKey}_${repoName}_lastUpdated`, Date.now());
+            
+            return data;
+        } catch (error) {
+            console.error(`Error fetching ${cacheKey}:`, error);
+            // 尝试使用localStorage缓存
+            const storedData = localStorage.getItem(`${cacheKey}_${repoName}`);
+            if (storedData) {
+                console.log(`Falling back to localStorage for ${cacheKey}`);
+                return JSON.parse(storedData);
+            }
+            throw error;
+        }
+    }
+    
+    function showCacheStatus() {
+        const existingStatus = document.querySelector('.cache-status');
+        if (existingStatus) existingStatus.remove();
+    
+        const status = document.createElement('div');
+        status.className = 'cache-status';
+        status.textContent = '使用缓存数据';
+        document.body.appendChild(status);
+        
+        setTimeout(() => {
+            status.style.opacity = '0';
+            setTimeout(() => status.remove(), 500);
+        }, 2000);
+    }
+    
+    function addRefreshButton() {
+        const header = document.querySelector('.repo-header');
+        if (!header) return;
+        
+        const refreshBtn = document.createElement('button');
+        refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新';
+        refreshBtn.className = 'refresh-btn';
+        refreshBtn.onclick = () => {
+            Object.keys(cache).forEach(key => delete cache[key]);
+            localStorage.clear();
+            location.reload();
+        };
+        header.appendChild(refreshBtn);
     }
     
     async function loadRepoDetails(repoName) {
@@ -41,74 +119,42 @@ document.addEventListener('DOMContentLoaded', function() {
             errorMsgDiv.style.display = 'none';
             repoDetailDiv.style.display = 'none';
             
-            // 检查缓存
-            const cachedData = getFromCache(repoName);
-            let repoData, lastCommitDate, readmeContent, contributors, releases, codeFrequency, commitActivity;
-            
-            if (cachedData) {
-                // 使用缓存数据
-                repoData = cachedData.repoData;
-                lastCommitDate = cachedData.lastCommitDate;
-                readmeContent = cachedData.readmeContent;
-                contributors = cachedData.contributors;
-                releases = cachedData.releases;
-                codeFrequency = cachedData.codeFrequency;
-                commitActivity = cachedData.commitActivity;
-            } else {
-                // 从API获取数据
-                [repoData, lastCommitDate] = await fetchRepoData(repoName);
-                readmeContent = await fetchReadme(repoName);
-                contributors = await fetchContributors(repoName);
-                releases = await fetchReleases(repoName);
-                codeFrequency = await fetchCodeFrequency(repoName);
-                commitActivity = await fetchCommitActivity(repoName);
-                
-                // 存储到缓存
-                saveToCache(repoName, {
-                    repoData,
-                    lastCommitDate,
-                    readmeContent,
-                    contributors,
-                    releases,
-                    codeFrequency,
-                    commitActivity,
-                    timestamp: Date.now()
-                });
-            }
+            // 获取仓库数据
+            const [repoData, lastCommitDate] = await fetchRepoData(repoName);
+            const readmeContent = await fetchReadme(repoName);
             
             // 渲染详情页
             renderRepoDetails(repoData, lastCommitDate, readmeContent);
-            renderContributors(contributors);
-            renderReleases(releases);
-            renderStats(codeFrequency, commitActivity, repoData);
+            
+            // 加载其他数据
+            fetchBranches(repoName);
+            fetchCommits(repoName);
+            fetchReleases(repoName);
+            fetchIssues(repoName);
+            fetchTags(repoName);
             
             loadingDiv.style.display = 'none';
             repoDetailDiv.style.display = 'block';
+            tabsContainer.style.display = 'block';
         } catch (error) {
             showError(error.message);
             loadingDiv.style.display = 'none';
         }
     }
     
-    // 原有的fetchRepoData和fetchReadme函数保持不变
     async function fetchRepoData(repoName) {
         try {
             // 获取仓库基本信息
-            const repoResponse = await fetch(`https://api.github.com/repos/${repoName}`);
-            if (!repoResponse.ok) throw new Error(`无法获取仓库 ${repoName} 的信息`);
-            const repoData = await repoResponse.json();
-
+            const repoData = await cachedFetch(`https://api.github.com/repos/${repoName}`, 'repoData');
+            
             // 获取最新提交信息
             let lastCommitDate = '未知';
-            const commitsResponse = await fetch(`https://api.github.com/repos/${repoName}/commits`);
-            if (commitsResponse.ok) {
-                const commitsData = await commitsResponse.json();
-                if (commitsData.length > 0) {
-                    const date = new Date(commitsData[0].commit.author.date);
-                    lastCommitDate = date.toLocaleDateString();
-                }
+            const commitsData = await cachedFetch(`https://api.github.com/repos/${repoName}/commits`, 'commits');
+            if (commitsData.length > 0) {
+                const date = new Date(commitsData[0].commit.author.date);
+                lastCommitDate = date.toLocaleDateString();
             }
-
+    
             return [repoData, lastCommitDate];
         } catch (error) {
             console.error(`获取仓库数据 ${repoName} 时出错:`, error);
@@ -135,224 +181,308 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    async function fetchContributors(repoName) {
+    async function fetchBranches(repoName) {
         try {
-            const response = await fetch(`https://api.github.com/repos/${repoName}/contributors`);
-            if (!response.ok) return [];
-            return await response.json();
+            const branches = await cachedFetch(`https://api.github.com/repos/${repoName}/branches`, 'branches');
+            const branchSelector = document.getElementById('branch-selector');
+            if (!branchSelector) return;
+            
+            branchSelector.innerHTML = '';
+            
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.name;
+                option.textContent = branch.name;
+                branchSelector.appendChild(option);
+            });
+            
+            const defaultBranch = branches.find(b => b.name === 'main' || b.name === 'master');
+            if (defaultBranch) branchSelector.value = defaultBranch.name;
+            
+            branchSelector.addEventListener('change', () => {
+                fetchCommits(repoName, branchSelector.value);
+            });
+            
         } catch (error) {
-            console.error('获取贡献者失败:', error);
-            return [];
+            console.error('获取分支失败:', error);
+            const branchSelector = document.getElementById('branch-selector');
+            if (branchSelector) {
+                branchSelector.innerHTML = '<option value="">获取分支失败</option>';
+            }
+        }
+    }
+    
+    let currentPage = 1;
+    async function fetchCommits(repoName, branch = 'main') {
+        try {
+            const commits = await cachedFetch(
+                `https://api.github.com/repos/${repoName}/commits?sha=${branch}&page=${currentPage}&per_page=10`,
+                `commits_${branch}_${currentPage}`
+            );
+            
+            const commitsList = document.getElementById('commits-list');
+            if (currentPage === 1) commitsList.innerHTML = '';
+            
+            if (commits.length === 0) {
+                if (currentPage === 1) commitsList.innerHTML = '<p>暂无提交记录</p>';
+                document.getElementById('load-more-commits').style.display = 'none';
+                return;
+            }
+            
+            commits.forEach(commit => {
+                const commitItem = document.createElement('div');
+                commitItem.className = 'commit-item';
+                const message = commit.commit.message.split('\n')[0];
+                const date = new Date(commit.commit.author.date);
+                
+                commitItem.innerHTML = `
+                    <div class="commit-message">${message}</div>
+                    <div class="commit-meta">
+                        <span><i class="fas fa-user"></i> ${commit.commit.author.name}</span>
+                        <span><i class="far fa-calendar-alt"></i> ${date.toLocaleString()}</span>
+                        <a href="${commit.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
+                    </div>
+                `;
+                commitsList.appendChild(commitItem);
+            });
+            
+            document.getElementById('load-more-commits').style.display = 'block';
+            document.getElementById('load-more-commits').onclick = () => {
+                currentPage++;
+                fetchCommits(repoName, branch);
+            };
+            
+        } catch (error) {
+            console.error('获取提交记录失败:', error);
+            document.getElementById('commits-list').innerHTML = '<p>获取提交记录失败</p>';
+        }
+    }
+    
+    async function fetchTags(repoName) {
+        try {
+            const tags = await cachedFetch(`https://api.github.com/repos/${repoName}/tags`, 'tags');
+            const tagsList = document.getElementById('tags-list');
+            
+            if (tags.length === 0) {
+                tagsList.innerHTML = '<p>暂无标签</p>';
+                return;
+            }
+            
+            tagsList.innerHTML = '';
+            tags.slice(0, 10).forEach(tag => {
+                const tagElement = document.createElement('a');
+                tagElement.className = 'tag';
+                tagElement.href = `https://github.com/${repoName}/releases/tag/${tag.name}`;
+                tagElement.target = '_blank';
+                tagElement.title = tag.name;
+                tagElement.innerHTML = `<i class="fas fa-tag"></i><span>${tag.name}</span>`;
+                tagsList.appendChild(tagElement);
+            });
+            
+            if (tags.length > 10) {
+                const moreLink = document.createElement('a');
+                moreLink.className = 'tag';
+                moreLink.href = `https://github.com/${repoName}/tags`;
+                moreLink.target = '_blank';
+                moreLink.textContent = `+${tags.length - 10} 更多`;
+                tagsList.appendChild(moreLink);
+            }
+            
+        } catch (error) {
+            console.error('获取标签失败:', error);
+            document.getElementById('tags-list').innerHTML = '<p>获取标签失败</p>';
         }
     }
     
     async function fetchReleases(repoName) {
         try {
-            const response = await fetch(`https://api.github.com/repos/${repoName}/releases`);
-            if (!response.ok) return [];
-            return await response.json();
+            const releases = await cachedFetch(
+                `https://api.github.com/repos/${repoName}/releases?per_page=5`,
+                'releases'
+            );
+            
+            const releasesList = document.getElementById('releases-list');
+            releasesList.innerHTML = releases.length === 0 ? '<p>暂无发布版本</p>' : '';
+            
+            releases.forEach(release => {
+                const releaseItem = document.createElement('div');
+                releaseItem.className = 'release-item';
+                const date = new Date(release.published_at);
+                
+                releaseItem.innerHTML = `
+                    <h4>${release.name || release.tag_name}</h4>
+                    <div class="release-meta">
+                        <span><i class="fas fa-tag"></i> ${release.tag_name}</span>
+                        <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
+                        <a href="${release.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
+                    </div>
+                    ${release.body ? `<div class="release-body">${release.body}</div>` : ''}
+                `;
+                releasesList.appendChild(releaseItem);
+            });
+            
         } catch (error) {
             console.error('获取发布版本失败:', error);
-            return [];
+            document.getElementById('releases-list').innerHTML = '<p>获取发布版本失败</p>';
         }
     }
     
-    async function fetchCodeFrequency(repoName) {
+    async function fetchIssues(repoName) {
         try {
-            const response = await fetch(`https://api.github.com/repos/${repoName}/stats/code_frequency`);
-            if (!response.ok) return null;
-            return await response.json();
+            const issues = await cachedFetch(
+                `https://api.github.com/repos/${repoName}/issues?per_page=5`,
+                'issues'
+            );
+            
+            const issuesList = document.getElementById('issues-list');
+            issuesList.innerHTML = issues.length === 0 ? '<p>暂无问题</p>' : '';
+            
+            issues.forEach(issue => {
+                const issueItem = document.createElement('div');
+                issueItem.className = 'issue-item';
+                const date = new Date(issue.created_at);
+                
+                issueItem.innerHTML = `
+                    <h4>${issue.title}</h4>
+                    <div class="issue-meta">
+                        <span><i class="fas fa-user"></i> ${issue.user.login}</span>
+                        <span><i class="far fa-calendar-alt"></i> ${date.toLocaleDateString()}</span>
+                        <span><i class="fas fa-comment"></i> ${issue.comments} 评论</span>
+                        <a href="${issue.html_url}" target="_blank"><i class="fas fa-external-link-alt"></i> 查看</a>
+                    </div>
+                    ${issue.body ? `<div class="issue-body">${issue.body.substring(0, 200)}...</div>` : ''}
+                `;
+                issuesList.appendChild(issueItem);
+            });
+            
         } catch (error) {
-            console.error('获取代码频率失败:', error);
-            return null;
+            console.error('获取问题失败:', error);
+            document.getElementById('issues-list').innerHTML = '<p>获取问题失败</p>';
         }
     }
     
-    async function fetchCommitActivity(repoName) {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${repoName}/stats/commit_activity`);
-            if (!response.ok) return null;
-            return await response.json();
-        } catch (error) {
-            console.error('获取提交活动失败:', error);
-            return null;
-        }
+    function setupTabs() {
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                button.classList.add('active');
+                document.getElementById(`${button.dataset.tab}-tab`).classList.add('active');
+            });
+        });
     }
     
-    function renderContributors(contributors) {
-        const contributorsGrid = document.getElementById('contributorsGrid');
+    function renderRepoDetails(repoData, lastCommitDate, readmeContent) {
+        const date = new Date(repoData.created_at);
+        const createdDate = date.toLocaleDateString();
         
-        if (!contributors || contributors.length === 0) {
-            contributorsGrid.innerHTML = '<p>暂无贡献者数据</p>';
-            return;
-        }
-        
-        contributorsGrid.innerHTML = contributors.map(contributor => `
-            <div class="contributor-card">
-                <img src="${contributor.avatar_url}" alt="${contributor.login}" class="contributor-avatar">
+        repoDetailDiv.innerHTML = `
+            <div class="repo-header">
+                <img src="${repoData.owner.avatar_url}" alt="${repoData.owner.login}" class="repo-avatar">
                 <div>
-                    <a href="${contributor.html_url}" target="_blank">${contributor.login}</a>
-                    <p>贡献: ${contributor.contributions}</p>
+                    <h1 class="repo-title">
+                        <a href="${repoData.html_url}" target="_blank">${repoData.full_name}</a>
+                    </h1>
+                    <p>创建于: ${createdDate} | 最后更新: ${lastCommitDate}</p>
                 </div>
             </div>
-        `).join('');
-    }
-    
-    function renderReleases(releases) {
-        const releasesList = document.getElementById('releasesList');
-        
-        if (!releases || releases.length === 0) {
-            releasesList.innerHTML = '<p>暂无发布版本</p>';
-            return;
-        }
-        
-        releasesList.innerHTML = releases.map(release => `
-            <div class="release-item">
-                <h4 class="release-title">
-                    <a href="${release.html_url}" target="_blank">${release.name || release.tag_name}</a>
-                </h4>
-                <p>${new Date(release.published_at).toLocaleDateString()}</p>
-                ${release.body ? `<div class="release-body">${release.body}</div>` : ''}
+            
+            <p class="repo-description">${repoData.description || '暂无描述'}</p>
+            
+            <div class="repo-meta">
+                <div class="meta-card">
+                    <h3>星标数</h3>
+                    <p>${repoData.stargazers_count.toLocaleString()}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>分支数</h3>
+                    <p>${repoData.forks_count.toLocaleString()}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>问题数</h3>
+                    <p>${repoData.open_issues_count.toLocaleString()}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>编程语言</h3>
+                    <p>${repoData.language || '未知'}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>许可证</h3>
+                    <p>${repoData.license ? repoData.license.name : '无'}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>默认分支</h3>
+                    <p>${repoData.default_branch}</p>
+                </div>
+                <div class="meta-card">
+                    <h3>仓库大小</h3>
+                    <p>${(repoData.size / 1024).toFixed(2)} MB</p>
+                </div>
+                <div class="meta-card">
+                    <h3>订阅者</h3>
+                    <p>${repoData.subscribers_count.toLocaleString()}</p>
+                </div>
             </div>
-        `).join('');
-    }
-    
-    function renderStats(codeFrequency, commitActivity, repoData) {
-        const statsGrid = document.getElementById('statsGrid');
-        
-        // 渲染基本统计
-        statsGrid.innerHTML = `
-            <div class="meta-card">
-                <h3>总提交数</h3>
-                <p>${repoData.commits_url ? '加载中...' : '数据不可用'}</p>
-            </div>
-            <div class="meta-card">
-                <h3>分支数</h3>
-                <p>${repoData.forks_count.toLocaleString()}</p>
-            </div>
-            <div class="meta-card">
-                <h3>问题数</h3>
-                <p>${repoData.open_issues_count.toLocaleString()}</p>
-            </div>
-            <div class="meta-card">
-                <h3>拉取请求</h3>
-                <p>${repoData.pulls_url ? '加载中...' : '数据不可用'}</p>
+            
+            <div id="tabsContainer" style="display: none;">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="readme">README</button>
+                    <button class="tab-button" data-tab="commits">提交记录</button>
+                    <button class="tab-button" data-tab="branches">分支</button>
+                    <button class="tab-button" data-tab="tags">标签</button>
+                    <button class="tab-button" data-tab="releases">发布版本</button>
+                    <button class="tab-button" data-tab="issues">问题</button>
+                </div>
+                
+                <div class="tab-content active" id="readme-tab">
+                    <h2 class="section-title">关于</h2>
+                    <div class="readme-content">
+                        ${readmeContent}
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="commits-tab">
+                    <h2 class="section-title">提交记录</h2>
+                    <div class="commits-controls">
+                        <select id="branch-selector" class="branch-selector">
+                            <option value="">加载分支...</option>
+                        </select>
+                        <button id="load-more-commits" class="load-more">加载更多</button>
+                    </div>
+                    <div id="commits-list" class="commits-list"></div>
+                </div>
+                
+                <div class="tab-content" id="branches-tab">
+                    <h2 class="section-title">分支</h2>
+                    <div id="branches-list" class="branches-list"></div>
+                </div>
+                
+                <div class="tab-content" id="tags-tab">
+                    <h2 class="section-title">标签</h2>
+                    <div id="tags-list" class="tags-list"></div>
+                </div>
+                
+                <div class="tab-content" id="releases-tab">
+                    <h2 class="section-title">发布版本</h2>
+                    <div id="releases-list" class="releases-list"></div>
+                </div>
+                
+                <div class="tab-content" id="issues-tab">
+                    <h2 class="section-title">问题</h2>
+                    <div id="issues-list" class="issues-list"></div>
+                </div>
             </div>
         `;
         
-        // 渲染代码频率图表
-        if (codeFrequency) {
-            renderCodeFrequencyChart(codeFrequency);
-        } else {
-            document.getElementById('codeFrequencyChart').parentElement.innerHTML = 
-                '<p>代码频率数据不可用</p>';
-        }
-        
-        // 渲染提交活动图表
-        if (commitActivity) {
-            renderCommitActivityChart(commitActivity);
-        } else {
-            document.getElementById('commitActivityChart').parentElement.innerHTML = 
-                '<p>提交活动数据不可用</p>';
-        }
+        // 初始化标签页
+        setupTabs();
     }
     
-    function renderCodeFrequencyChart(data) {
-        const ctx = document.getElementById('codeFrequencyChart').getContext('2d');
-        
-        // 处理数据：转换为每周的净变化（添加行 - 删除行）
-        const weeks = data.map(([timestamp, additions, deletions]) => ({
-            date: new Date(timestamp * 1000),
-            netChange: additions - deletions
-        }));
-        
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: weeks.map(week => week.date.toLocaleDateString()),
-                datasets: [{
-                    label: '每周代码净变化(行)',
-                    data: weeks.map(week => week.netChange),
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: false
-                    }
-                }
-            }
-        });
-    }
-    
-    function renderCommitActivityChart(data) {
-        const ctx = document.getElementById('commitActivityChart').getContext('2d');
-        
-        // 处理数据：获取最近12周的数据
-        const recentWeeks = data.slice(-12);
-        
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: recentWeeks.map((week, index) => `${12 - index}周前`),
-                datasets: [{
-                    label: '每周提交数',
-                    data: recentWeeks.map(week => week.total),
-                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-    
-    // 原有的getFromCache、saveToCache和showError函数保持不变
-    function getFromCache(repoName) {
-        const cacheKey = `repo_${repoName}`;
-        const cachedItem = localStorage.getItem(cacheKey);
-        
-        if (!cachedItem) return null;
-        
-        try {
-            const parsedData = JSON.parse(cachedItem);
-            
-            // 检查缓存是否过期
-            if (Date.now() - parsedData.timestamp > CACHE_EXPIRY) {
-                localStorage.removeItem(cacheKey);
-                return null;
-            }
-            
-            return parsedData;
-        } catch (e) {
-            localStorage.removeItem(cacheKey);
-            return null;
-        }
-    }
-
-    function saveToCache(repoName, data) {
-        const cacheKey = `repo_${repoName}`;
-        try {
-            localStorage.setItem(cacheKey, JSON.stringify(data));
-        } catch (e) {
-            // 如果本地存储已满，清空缓存
-            if (e.name === 'QuotaExceededError') {
-                localStorage.clear();
-                console.warn('本地存储已满，已清空缓存');
-            }
-        }
+    function showError(message) {
+        errorMsgDiv.textContent = message;
+        errorMsgDiv.style.display = 'block';
     }
 });
