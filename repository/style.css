@@ -166,8 +166,8 @@ h1, h2, h3 {
 
 .back-button {
   position: absolute;
-  top: 15px;      /* 距离顶部20像素 */
-  left: 15px;     /* 距离左侧20像素 */
+  top: 10px;      /* 距离顶部20像素 */
+  left: 10px;     /* 距离左侧20像素 */
   padding: 10px 20px;
   background-color: #0366d6;
   color: white;
