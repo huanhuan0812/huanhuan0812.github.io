@@ -67,29 +67,34 @@
             border-radius: 3px;
             background-color: #f6f8fa;
         }
-        .video-container {
-        position: relative;
-        padding-bottom: 56.25%; /* 16:9 宽高比 */
-        height: 0;
-        overflow: hidden;
-        }
-        .video-container video {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        }
     </style>
 </head>
 <body>
     <a href="https://huanhuan0812.github.io" class="back-button">⬅返回</a>
     
-    <iframe width="560" height="315" 
-        src="https://www.bilibili.com/video/BV15EuAzgEpS" 
-        frameborder="0" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-        allowfullscreen>
-    </iframe>
+    <div id="content" class="content">
+        <div id="loading" class="loading">正在加载Markdown内容...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('index.md')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('文件加载失败: ' + response.status);
+                    }
+                    return response.text();
+                })
+                .then(markdown => {
+                    // 使用DOMPurify清理Markdown渲染后的HTML
+                    const html = DOMPurify.sanitize(marked.parse(markdown));
+                    document.getElementById('content').innerHTML = html;
+                })
+                .catch(error => {
+                    document.getElementById('content').innerHTML = 
+                        `<div class="error">错误: ${error.message}<br>请确保同目录下存在index.md文件</div>`;
+                });
+        });
+    </script>
 </body>
 </html>
