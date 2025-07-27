@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.getElementById('search-button');
     let currentFile = null;
     let allFiles = []; // 存储所有文件列表
-    let fileMetadata = {}; // 存储文件的元数据
     
     // 缓存设置
     const CACHE_NAME = 'md-browser-cache';
@@ -32,35 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('缓存初始化失败:', error);
         }
-    }
-    
-    // 解析Frontmatter
-    function parseFrontmatter(content) {
-        const frontmatter = { title: null, tags: [] };
-        
-        // 匹配YAML格式的Frontmatter
-        const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n/;
-        const match = content.match(frontmatterRegex);
-        
-        if (match) {
-            const yamlContent = match[1];
-            try {
-                // 简单解析YAML（实际项目中可以使用js-yaml等库）
-                yamlContent.split('\n').forEach(line => {
-                    const trimmed = line.trim();
-                    if (trimmed.startsWith('title:')) {
-                        frontmatter.title = trimmed.substring(6).trim().replace(/^['"]|['"]$/g, '');
-                    } else if (trimmed.startsWith('tags:')) {
-                        const tagsStr = trimmed.substring(5).trim();
-                        frontmatter.tags = tagsStr.split(',').map(tag => tag.trim().replace(/^['"\[\]]|['"\[\]]$/g, ''));
-                    }
-                });
-            } catch (e) {
-                console.error('解析Frontmatter失败:', e);
-            }
-        }
-        
-        return frontmatter;
     }
     
     // 获取仓库中的 Markdown 文件列表（带缓存）
@@ -114,14 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         const filteredFiles = allFiles.filter(file => {
-            const metadata = fileMetadata[file] || {};
             const fileName = file.split('/').pop().toLowerCase();
-            const title = (metadata.title || '').toLowerCase();
-            const tags = (metadata.tags || []).join(' ').toLowerCase();
-            
-            return fileName.includes(searchTerm) || 
-                   title.includes(searchTerm) || 
-                   tags.includes(searchTerm);
+            return fileName.includes(searchTerm);
         });
         
         displayFileList(filteredFiles);
@@ -180,13 +144,10 @@ document.addEventListener('DOMContentLoaded', function() {
         currentFile = filename;
         
         // 检查缓存
-        const cacheKey = `file-${filename}`;
-        const cachedContent = await getFromCache(cacheKey);
+        const cachedContent = await getFromCache(`file-${filename}`);
         
         if (cachedContent) {
-            const { content, frontmatter } = cachedContent;
-            fileMetadata[filename] = frontmatter;
-            renderMarkdown(content, frontmatter);
+            markdownContent.innerHTML = marked.parse(cachedContent);
             updateActiveFile(filename);
             history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
             return;
@@ -201,16 +162,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const markdownText = await response.text();
-            const frontmatter = parseFrontmatter(markdownText);
-            fileMetadata[filename] = frontmatter;
-            
-            // 移除Frontmatter部分（如果有）
-            const content = markdownText.replace(/^---\s*\n[\s\S]*?\n---\s*\n/, '');
-            
-            renderMarkdown(content, frontmatter);
+            markdownContent.innerHTML = marked.parse(markdownText);
             
             // 存入缓存
-            await saveToCache(cacheKey, { content, frontmatter });
+            await saveToCache(`file-${filename}`, markdownText);
             
             history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
             updateActiveFile(filename);
@@ -219,28 +174,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('加载 Markdown 文件失败:', error);
             markdownContent.innerHTML = `<p>无法加载文件: ${filename}</p>`;
         }
-    }
-    
-    // 渲染Markdown内容
-    function renderMarkdown(content, frontmatter) {
-        let html = '';
-        
-        // 添加标题和标签
-        if (frontmatter.title) {
-            html += `<h1>${frontmatter.title}</h1>`;
-        }
-        
-        if (frontmatter.tags && frontmatter.tags.length > 0) {
-            html += `<div class="tags">`;
-            html += `<span class="tags-label">标签:</span>`;
-            frontmatter.tags.forEach(tag => {
-                html += `<span class="tag">${tag}</span>`;
-            });
-            html += `</div>`;
-        }
-        
-        html += marked.parse(content);
-        markdownContent.innerHTML = html;
     }
     
     // 更新活动文件样式
@@ -260,19 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         files.forEach(file => {
             const fileName = file.split('/').pop();
-            const metadata = fileMetadata[file] || {};
-            const displayName = metadata.title || fileName;
-            
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
-            
-            // 添加文件信息
-            fileItem.innerHTML = `
-                <div class="file-title">${displayName}</div>
-                ${metadata.tags && metadata.tags.length > 0 ? 
-                    `<div class="file-tags">${metadata.tags.map(tag => `<span>${tag}</span>`).join('')}</div>` : ''}
-            `;
-            
+            fileItem.textContent = fileName;
             fileItem.dataset.path = file;
             
             fileItem.addEventListener('click', () => {
