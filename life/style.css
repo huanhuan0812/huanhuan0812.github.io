@@ -142,18 +142,18 @@ h1 {
 }
 
 .back-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    background-color: #0366d6;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 4px;
-    text-decoration: none;
-    font-weight: bold;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 1000;
+  position: absolute;
+  top: 10px;      /* 距离顶部20像素 */
+  left: 10px;     /* 距离左侧20像素 */
+  padding: 10px 20px;
+  background-color: #0366d6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
+
+/* 悬停状态 */
 .back-button:hover {
-    background-color: #0550a8;
+  background-color: #035fc7;
 }
