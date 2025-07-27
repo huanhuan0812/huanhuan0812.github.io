@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             // 使用 GitHub 原始内容链接
-            const response = await fetch(`https://raw.githubusercontent.com/${repo}/main/${filename}`);
+            const response = await fetch(`https://raw.githubusercontent.com/huanhuan0812/mylife/main/${filename}`);
             
             if (!response.ok) {
                 throw new Error('文件加载失败');
