@@ -103,3 +103,40 @@ h1 {
         max-width: 100%;
     }
 }
+
+/* 原有样式保持不变，添加以下新样式 */
+
+.search-container {
+    margin-bottom: 15px;
+    display: flex;
+    gap: 5px;
+}
+
+#search-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#search-button {
+    padding: 8px 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#search-button:hover {
+    background-color: #2980b9;
+}
+
+.no-results {
+    color: #777;
+    padding: 10px;
+    text-align: center;
+    font-style: italic;
+}

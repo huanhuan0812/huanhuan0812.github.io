@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const fileListContainer = document.getElementById('file-list');
     const markdownContent = document.getElementById('markdown-content');
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
     let currentFile = null;
+    let allFiles = []; // 存储所有文件列表
     
     // 缓存设置
     const CACHE_NAME = 'md-browser-cache';
@@ -38,8 +41,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const cachedData = await getFromCache(cacheKey);
             
             if (cachedData) {
-                displayFileList(cachedData);
-                loadInitialFile(cachedData);
+                allFiles = cachedData;
+                displayFileList(allFiles);
+                loadInitialFile(allFiles);
                 return;
             }
             
@@ -54,20 +58,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const data = await response.json();
-            const mdFiles = data.tree
+            allFiles = data.tree
                 .filter(item => item.path.endsWith('.md') && item.type === 'blob')
                 .map(item => item.path);
             
             // 存入缓存
-            await saveToCache(cacheKey, mdFiles);
+            await saveToCache(cacheKey, allFiles);
             
-            displayFileList(mdFiles);
-            loadInitialFile(mdFiles);
+            displayFileList(allFiles);
+            loadInitialFile(allFiles);
             
         } catch (error) {
             console.error('获取文件列表失败:', error);
             fileListContainer.innerHTML = '<p>无法加载文件列表</p>';
         }
+    }
+    
+    // 搜索文件
+    function searchFiles() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        
+        if (!searchTerm) {
+            displayFileList(allFiles);
+            return;
+        }
+        
+        const filteredFiles = allFiles.filter(file => {
+            const fileName = file.split('/').pop().toLowerCase();
+            return fileName.includes(searchTerm);
+        });
+        
+        displayFileList(filteredFiles);
     }
     
     // 从缓存加载初始文件
@@ -164,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function displayFileList(files) {
         if (files.length === 0) {
-            fileListContainer.innerHTML = '<p>没有找到 Markdown 文件</p>';
+            fileListContainer.innerHTML = '<div class="no-results">没有找到匹配的文件</div>';
             return;
         }
         
@@ -183,14 +204,27 @@ document.addEventListener('DOMContentLoaded', function() {
             
             fileListContainer.appendChild(fileItem);
         });
+        
+        // 如果有当前活动文件且在显示列表中，保持其高亮状态
+        if (currentFile && files.includes(currentFile)) {
+            updateActiveFile(currentFile);
+        }
     }
     
+    // 事件监听器
     window.addEventListener('popstate', function() {
         const params = new URLSearchParams(window.location.search);
         const fileParam = params.get('file');
         
         if (fileParam && fileParam !== currentFile) {
             loadMarkdownFile(fileParam);
+        }
+    });
+    
+    searchButton.addEventListener('click', searchFiles);
+    searchInput.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') {
+            searchFiles();
         }
     });
     
