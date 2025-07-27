@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日学习</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 15px;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 100;
+        }
+        .refresh-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: #0366d6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        iframe {
+            width: 100%;
+            height: 100vh;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://huanhuan0812.github.io" class="back-button">返回主页</a>
+    <button class="refresh-button" onclick="loadRandomWikiPage()">🔄</button>
+
+    <iframe id="wikiFrame" src="https://zh.wikipedia.org/wiki/Special:Random"></iframe>
+
+    <script>
+        function loadRandomWikiPage() {
+            document.getElementById('wikiFrame').src = "https://zh.wikipedia.org/wiki/Special:Random";
+        }
+    </script>
+</body>
+</html>
