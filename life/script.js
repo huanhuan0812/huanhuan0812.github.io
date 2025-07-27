@@ -3,9 +3,46 @@ document.addEventListener('DOMContentLoaded', function() {
     const markdownContent = document.getElementById('markdown-content');
     let currentFile = null;
     
-    // 获取仓库中的 Markdown 文件列表
+    // 缓存设置
+    const CACHE_NAME = 'md-browser-cache';
+    const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24小时缓存
+    
+    // 初始化缓存
+    async function initCache() {
+        if (!('caches' in window)) return;
+        
+        try {
+            const cache = await caches.open(CACHE_NAME);
+            // 清理过期缓存
+            const keys = await cache.keys();
+            const now = Date.now();
+            
+            for (const request of keys) {
+                const cachedResponse = await cache.match(request);
+                const cachedDate = new Date(cachedResponse.headers.get('date'));
+                
+                if (now - cachedDate.getTime() > CACHE_EXPIRY) {
+                    await cache.delete(request);
+                }
+            }
+        } catch (error) {
+            console.error('缓存初始化失败:', error);
+        }
+    }
+    
+    // 获取仓库中的 Markdown 文件列表（带缓存）
     async function fetchMarkdownFiles() {
         try {
+            // 检查缓存
+            const cacheKey = 'file-list';
+            const cachedData = await getFromCache(cacheKey);
+            
+            if (cachedData) {
+                displayFileList(cachedData);
+                loadInitialFile(cachedData);
+                return;
+            }
+            
             // 替换为你的 GitHub 用户名和仓库名
             const repo = 'huanhuan0812/mylife';
             const branch = 'main'; // 或 'master'
@@ -21,22 +58,108 @@ document.addEventListener('DOMContentLoaded', function() {
                 .filter(item => item.path.endsWith('.md') && item.type === 'blob')
                 .map(item => item.path);
             
+            // 存入缓存
+            await saveToCache(cacheKey, mdFiles);
+            
             displayFileList(mdFiles);
-            
-            // 检查 URL 参数
-            const params = new URLSearchParams(window.location.search);
-            const fileParam = params.get('file');
-            
-            if (fileParam && mdFiles.includes(fileParam)) {
-                loadMarkdownFile(fileParam);
-            } else if (mdFiles.length > 0) {
-                loadMarkdownFile(mdFiles[0]);
-            }
+            loadInitialFile(mdFiles);
             
         } catch (error) {
             console.error('获取文件列表失败:', error);
             fileListContainer.innerHTML = '<p>无法加载文件列表</p>';
         }
+    }
+    
+    // 从缓存加载初始文件
+    function loadInitialFile(files) {
+        const params = new URLSearchParams(window.location.search);
+        const fileParam = params.get('file');
+        
+        if (fileParam && files.includes(fileParam)) {
+            loadMarkdownFile(fileParam);
+        } else if (files.length > 0) {
+            loadMarkdownFile(files[0]);
+        }
+    }
+    
+    // 从缓存获取数据
+    async function getFromCache(key) {
+        if (!('caches' in window)) return null;
+        
+        try {
+            const cache = await caches.open(CACHE_NAME);
+            const response = await cache.match(`https://cache/${key}`);
+            
+            if (!response) return null;
+            
+            return await response.json();
+        } catch (error) {
+            console.error('从缓存读取失败:', error);
+            return null;
+        }
+    }
+    
+    // 保存数据到缓存
+    async function saveToCache(key, data) {
+        if (!('caches' in window)) return;
+        
+        try {
+            const cache = await caches.open(CACHE_NAME);
+            const response = new Response(JSON.stringify(data), {
+                headers: {
+                    'date': new Date().toUTCString(),
+                    'content-type': 'application/json'
+                }
+            });
+            
+            await cache.put(`https://cache/${key}`, response);
+        } catch (error) {
+            console.error('保存到缓存失败:', error);
+        }
+    }
+    
+    // 加载Markdown文件（带缓存）
+    async function loadMarkdownFile(filename) {
+        currentFile = filename;
+        
+        // 检查缓存
+        const cachedContent = await getFromCache(`file-${filename}`);
+        
+        if (cachedContent) {
+            markdownContent.innerHTML = marked.parse(cachedContent);
+            updateActiveFile(filename);
+            history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
+            return;
+        }
+        
+        try {
+            // 使用 GitHub 原始内容链接
+            const response = await fetch(`https://raw.githubusercontent.com/huanhuan0812/mylife/main/${filename}`);
+            
+            if (!response.ok) {
+                throw new Error('文件加载失败');
+            }
+            
+            const markdownText = await response.text();
+            markdownContent.innerHTML = marked.parse(markdownText);
+            
+            // 存入缓存
+            await saveToCache(`file-${filename}`, markdownText);
+            
+            history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
+            updateActiveFile(filename);
+            
+        } catch (error) {
+            console.error('加载 Markdown 文件失败:', error);
+            markdownContent.innerHTML = `<p>无法加载文件: ${filename}</p>`;
+        }
+    }
+    
+    // 更新活动文件样式
+    function updateActiveFile(filename) {
+        document.querySelectorAll('.file-item').forEach(item => {
+            item.classList.toggle('active', item.dataset.path === filename);
+        });
     }
     
     function displayFileList(files) {
@@ -55,36 +178,11 @@ document.addEventListener('DOMContentLoaded', function() {
             fileItem.dataset.path = file;
             
             fileItem.addEventListener('click', () => {
-                document.querySelectorAll('.file-item').forEach(item => {
-                    item.classList.remove('active');
-                });
-                fileItem.classList.add('active');
                 loadMarkdownFile(file);
             });
             
             fileListContainer.appendChild(fileItem);
         });
-    }
-    
-    async function loadMarkdownFile(filename) {
-        currentFile = filename;
-        
-        try {
-            // 使用 GitHub 原始内容链接
-            const response = await fetch(`https://raw.githubusercontent.com/huanhuan0812/mylife/main/${filename}`);
-            
-            if (!response.ok) {
-                throw new Error('文件加载失败');
-            }
-            
-            const markdownText = await response.text();
-            markdownContent.innerHTML = marked.parse(markdownText);
-            history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
-            
-        } catch (error) {
-            console.error('加载 Markdown 文件失败:', error);
-            markdownContent.innerHTML = `<p>无法加载文件: ${filename}</p>`;
-        }
     }
     
     window.addEventListener('popstate', function() {
@@ -93,11 +191,10 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (fileParam && fileParam !== currentFile) {
             loadMarkdownFile(fileParam);
-            document.querySelectorAll('.file-item').forEach(item => {
-                item.classList.toggle('active', item.dataset.path === fileParam);
-            });
         }
     });
     
+    // 初始化
+    initCache();
     fetchMarkdownFiles();
 });
