@@ -3,45 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Markdown 文档网站</title>
+    <title>Markdown 文件浏览器</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
-    <script src="script.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h1>文档目录</h1>
-                <button id="theme-toggle" class="theme-toggle" title="切换主题">
-                    <i class="fas fa-moon"></i>
-                </button>
-            </div>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="搜索文档...">
-                <i class="fas fa-search"></i>
-            </div>
-            <div class="sidebar-content" id="sidebar-content">
-                <!-- 动态生成的目录将在这里显示 -->
-            </div>
-        </aside>
-        <main class="content">
-            <div id="content">
-                <div class="welcome-message">
-                    <h1>欢迎来到文档中心</h1>
-                    <p>请从左侧选择一篇文档开始阅读。</p>
+        <h1>Markdown 文件浏览器</h1>
+        
+        <div class="layout">
+            <div class="sidebar">
+                <h2>文件列表</h2>
+                <div id="file-list" class="file-list">
+                    <!-- 文件列表将在这里动态生成 -->
                 </div>
             </div>
-            <div class="toc-container" id="toc-container">
-                <div class="toc-header">
-                    <h3>目录</h3>
-                    <button class="toc-toggle"><i class="fas fa-times"></i></button>
+            
+            <div class="content">
+                <div id="markdown-content" class="markdown-rendered">
+                    <p>请从左侧选择要查看的 Markdown 文件</p>
                 </div>
-                <div class="toc-content" id="toc-content"></div>
             </div>
-        </main>
+        </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
