@@ -141,66 +141,19 @@ h1 {
     font-style: italic;
 }
 
-/* 文件列表项样式 */
-.file-item {
-    padding: 12px;
-    margin-bottom: 8px;
-    background: #f8f9fa;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.file-item:hover {
-    background: #e9ecef;
-}
-
-.file-item.active {
-    background: #3498db;
+.back-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #0366d6;
     color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
 }
-
-.file-title {
-    font-weight: 500;
-    margin-bottom: 4px;
-}
-
-.file-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    font-size: 12px;
-}
-
-.file-tags span {
-    background: rgba(0, 0, 0, 0.1);
-    padding: 2px 6px;
-    border-radius: 10px;
-}
-
-.file-item.active .file-tags span {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-/* 内容区标签样式 */
-.tags {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.tags-label {
-    font-size: 14px;
-    color: #666;
-}
-
-.tag {
-    background: #e0e0e0;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 14px;
+.back-button:hover {
+    background-color: #0550a8;
 }
