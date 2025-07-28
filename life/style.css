@@ -157,3 +157,35 @@ h1 {
 .back-button:hover {
   background-color: #035fc7;
 }
+
+/* 在文件末尾添加以下样式 */
+
+/* 标签搜索提示 */
+.search-hint {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* 文件项样式调整 */
+.file-item {
+    padding: 10px 12px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+}
+
+.file-item:hover {
+    background: #e0e0e0;
+}
+
+.file-item.active {
+    background: #3498db;
+    color: white;
+}
+
+.file-item.active .tag {
+    color: #e0e0e0 !important;
+}
