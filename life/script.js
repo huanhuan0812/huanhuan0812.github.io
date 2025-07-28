@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchButton = document.getElementById('search-button');
     let currentFile = null;
     let allFiles = []; // 存储所有文件列表
+    let fileMetadata = {}; // 存储文件的元数据
     
     // 缓存设置
     const CACHE_NAME = 'md-browser-cache';
@@ -31,6 +32,43 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             console.error('缓存初始化失败:', error);
         }
+    }
+    
+    // 解析Frontmatter
+    function parseFrontmatter(content) {
+        const frontmatter = {
+            title: '',
+            tags: [],
+            content: content
+        };
+        
+        // 检查是否有frontmatter
+        if (content.startsWith('---')) {
+            const endFrontmatter = content.indexOf('---', 3);
+            if (endFrontmatter !== -1) {
+                const frontmatterText = content.substring(3, endFrontmatter).trim();
+                const contentText = content.substring(endFrontmatter + 3).trim();
+                
+                frontmatter.content = contentText;
+                
+                // 解析frontmatter内容
+                frontmatterText.split('\n').forEach(line => {
+                    const match = line.match(/^([^:]+):\s*(.*)$/);
+                    if (match) {
+                        const key = match[1].trim().toLowerCase();
+                        const value = match[2].trim();
+                        
+                        if (key === 'title') {
+                            frontmatter.title = value;
+                        } else if (key === 'tags') {
+                            frontmatter.tags = value.split(',').map(tag => tag.trim());
+                        }
+                    }
+                });
+            }
+        }
+        
+        return frontmatter;
     }
     
     // 获取仓库中的 Markdown 文件列表（带缓存）
@@ -83,12 +121,29 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        const filteredFiles = allFiles.filter(file => {
-            const fileName = file.split('/').pop().toLowerCase();
-            return fileName.includes(searchTerm);
-        });
-        
-        displayFileList(filteredFiles);
+        // 检查是否是标签搜索（格式为 tag:标签名）
+        if (searchTerm.startsWith('tag:')) {
+            const tagName = searchTerm.substring(4).trim();
+            const filteredFiles = allFiles.filter(file => {
+                const metadata = fileMetadata[file];
+                return metadata && metadata.tags && metadata.tags.some(tag => 
+                    tag.toLowerCase().includes(tagName)
+                );
+            });
+            
+            displayFileList(filteredFiles);
+        } else {
+            // 普通搜索
+            const filteredFiles = allFiles.filter(file => {
+                const fileName = file.split('/').pop().toLowerCase();
+                const metadata = fileMetadata[file];
+                const titleMatch = metadata && metadata.title && 
+                    metadata.title.toLowerCase().includes(searchTerm);
+                return fileName.includes(searchTerm) || titleMatch;
+            });
+            
+            displayFileList(filteredFiles);
+        }
     }
     
     // 从缓存加载初始文件
@@ -147,7 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const cachedContent = await getFromCache(`file-${filename}`);
         
         if (cachedContent) {
-            markdownContent.innerHTML = marked.parse(cachedContent);
+            const parsed = parseFrontmatter(cachedContent);
+            fileMetadata[filename] = {
+                title: parsed.title,
+                tags: parsed.tags
+            };
+            markdownContent.innerHTML = marked.parse(parsed.content);
             updateActiveFile(filename);
             history.pushState(null, '', `?file=${encodeURIComponent(filename)}`);
             return;
@@ -162,7 +222,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             const markdownText = await response.text();
-            markdownContent.innerHTML = marked.parse(markdownText);
+            const parsed = parseFrontmatter(markdownText);
+            
+            fileMetadata[filename] = {
+                title: parsed.title,
+                tags: parsed.tags
+            };
+            
+            markdownContent.innerHTML = marked.parse(parsed.content);
             
             // 存入缓存
             await saveToCache(`file-${filename}`, markdownText);
@@ -193,9 +260,35 @@ document.addEventListener('DOMContentLoaded', function() {
         
         files.forEach(file => {
             const fileName = file.split('/').pop();
+            const metadata = fileMetadata[file] || {};
+            const displayName = metadata.title || fileName.replace('.md', '');
+            
             const fileItem = document.createElement('div');
             fileItem.className = 'file-item';
-            fileItem.textContent = fileName;
+            
+            // 创建文件标题元素
+            const titleElement = document.createElement('div');
+            titleElement.textContent = displayName;
+            titleElement.style.fontWeight = 'bold';
+            
+            // 创建标签容器
+            const tagsContainer = document.createElement('div');
+            tagsContainer.style.marginTop = '4px';
+            tagsContainer.style.fontSize = '0.8em';
+            
+            // 添加标签
+            if (metadata.tags && metadata.tags.length > 0) {
+                metadata.tags.forEach(tag => {
+                    const tagElement = document.createElement('span');
+                    tagElement.textContent = `#${tag}`;
+                    tagElement.style.marginRight = '5px';
+                    tagElement.style.color = '#666';
+                    tagsContainer.appendChild(tagElement);
+                });
+            }
+            
+            fileItem.appendChild(titleElement);
+            fileItem.appendChild(tagsContainer);
             fileItem.dataset.path = file;
             
             fileItem.addEventListener('click', () => {
