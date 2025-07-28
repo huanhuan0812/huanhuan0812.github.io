@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 缓存设置
     const CACHE_NAME = 'md-browser-cache';
-    const CACHE_EXPIRY = 1 * 60 * 60 * 1000; // 1小时缓存
+    const CACHE_EXPIRY = 2 * 60 * 60 * 1000; // 1小时缓存
     
     // 初始化缓存
     async function initCache() {
