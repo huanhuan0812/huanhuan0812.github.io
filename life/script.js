@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const markdownContent = document.getElementById('markdown-content');
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
+    const refreshButton = document.getElementById('refresh-button');
     let currentFile = null;
     let allFiles = []; // 存储所有文件列表
     let fileMetadata = {}; // 存储文件的元数据
@@ -319,6 +320,27 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Enter') {
             searchFiles();
         }
+    });
+
+    async function clearCache() {
+        if (!('caches' in window)) return;
+    
+        try {
+            await caches.delete(CACHE_NAME);
+            console.log('缓存已清除');
+        } catch (error) {
+            console.error('清除缓存失败:', error);
+        }
+    }
+
+    // 添加刷新功能
+    refreshButton.addEventListener('click', async function() {
+        await clearCache();
+        allFiles = [];
+        fileMetadata = {};
+        currentFile = null;
+        await fetchMarkdownFiles();
+        markdownContent.innerHTML = '<p>内容已刷新，请选择要查看的文件</p>';
     });
     
     // 初始化
