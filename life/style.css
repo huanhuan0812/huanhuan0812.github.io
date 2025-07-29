@@ -197,7 +197,7 @@ h1 {
   top: 10px;
   right: 10px;
   padding: 10px 20px;
-  background-color: #28a745;
+  background-color: #0366d6;
   color: white;
   border: none;
   border-radius: 5px;
@@ -206,5 +206,5 @@ h1 {
 
 /* 悬停状态 */
 .refresh-button:hover {
-  background-color: #218838;
+  background-color: #035fc7;
 }
