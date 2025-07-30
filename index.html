@@ -33,6 +33,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -183,6 +184,11 @@
             padding: 3rem 0;
             text-align: center;
             min-height: 70vh;
+            transition: all 0.5s ease;
+        }
+
+        .hero-section {
+            padding: 5rem 0;
         }
 
         h1 {
@@ -219,6 +225,54 @@
             transform: translateY(-2px);
         }
 
+        /* About Me 部分样式 */
+        .about-me {
+            background-color: var(--light-bg);
+            padding: 4rem 0;
+            transform: translateY(50px);
+            opacity: 0;
+            transition: all 0.8s ease;
+        }
+
+        .about-me.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .markdown-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: left;
+            padding: 0 1rem;
+        }
+
+        .markdown-content h2 {
+            color: var(--primary-color);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.8rem;
+        }
+
+        .markdown-content p {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        .markdown-content a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .markdown-content a:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+
+        .markdown-content ul, .markdown-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
         footer {
             background-color: white;
             color: #6b7280;
@@ -249,9 +303,15 @@
             .container {
                 width: 95%;
             }
+
+            .hero-section {
+                padding: 3rem 0;
+            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- 引入Marked.js用于渲染Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <header>
@@ -288,10 +348,22 @@
 
     <main>
         <div class="container">
-            <h1>欢迎来到我的个人主页</h1>
-            <a href="./randwiki.html" class="btn">今日wiki</a>
+            <section class="hero-section">
+                <h1>欢迎来到我的个人主页</h1>
+                <p>这里是我的个人空间，分享知识、经验和生活点滴</p>
+                <a href="./randwiki.html" class="btn">今日wiki</a>
+            </section>
         </div>
     </main>
+
+    <!-- About Me 部分 -->
+    <section class="about-me" id="about-me">
+        <div class="container">
+            <div class="markdown-content" id="markdown-content">
+                <!-- Markdown内容将通过JavaScript动态加载 -->
+            </div>
+        </div>
+    </section>
 
     <footer>
         <div class="container">
@@ -317,6 +389,46 @@
                 hamburger.classList.remove('open');
                 sidebar.classList.remove('open');
             });
+        });
+
+        // 加载并渲染Markdown内容
+        document.addEventListener('DOMContentLoaded', function() {
+            // 这里应该是你的aboutme.md文件的路径
+            fetch('./aboutme.md')
+                .then(response => response.text())
+                .then(text => {
+                    // 使用marked.js渲染Markdown
+                    document.getElementById('markdown-content').innerHTML = marked.parse(text);
+                })
+                .catch(error => {
+                    console.error('Error loading markdown file:', error);
+                    document.getElementById('markdown-content').innerHTML = 
+                        '<p>无法加载关于我的内容。请稍后再试。</p>';
+                });
+        });
+
+        // 滚动时显示About Me部分
+        window.addEventListener('scroll', function() {
+            const aboutMeSection = document.getElementById('about-me');
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            const sectionPosition = aboutMeSection.getBoundingClientRect().top;
+            
+            // 当About Me部分进入视口时添加visible类
+            if (sectionPosition < windowHeight * 0.75) {
+                aboutMeSection.classList.add('visible');
+            }
+        });
+
+        // 初始化检查，如果页面加载时About Me已经在视图中
+        window.addEventListener('load', function() {
+            const aboutMeSection = document.getElementById('about-me');
+            const sectionPosition = aboutMeSection.getBoundingClientRect().top;
+            const windowHeight = window.innerHeight;
+            
+            if (sectionPosition < windowHeight) {
+                aboutMeSection.classList.add('visible');
+            }
         });
     </script>
 </body>
