@@ -225,18 +225,20 @@
             transform: translateY(-2px);
         }
 
-        /* About Me 部分样式 */
+        /* About Me 部分样式 - 初始隐藏 */
         .about-me {
             background-color: var(--light-bg);
             padding: 4rem 0;
             transform: translateY(50px);
             opacity: 0;
+            visibility: hidden;
             transition: all 0.8s ease;
         }
 
         .about-me.visible {
             transform: translateY(0);
             opacity: 1;
+            visibility: visible;
         }
 
         .markdown-content {
@@ -356,7 +358,7 @@
         </div>
     </main>
 
-    <!-- About Me 部分 -->
+    <!-- About Me 部分 - 初始隐藏 -->
     <section class="about-me" id="about-me">
         <div class="container">
             <div class="markdown-content" id="markdown-content">
@@ -420,15 +422,9 @@
             }
         });
 
-        // 初始化检查，如果页面加载时About Me已经在视图中
+        // 确保页面加载时不显示About Me部分
         window.addEventListener('load', function() {
-            const aboutMeSection = document.getElementById('about-me');
-            const sectionPosition = aboutMeSection.getBoundingClientRect().top;
-            const windowHeight = window.innerHeight;
-            
-            if (sectionPosition < windowHeight) {
-                aboutMeSection.classList.add('visible');
-            }
+            // 这里不需要检查是否在视图中，因为我们希望初始时隐藏
         });
     </script>
 </body>
