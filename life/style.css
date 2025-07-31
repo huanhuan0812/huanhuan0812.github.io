@@ -1,210 +1,214 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-    color: #333;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
     padding: 20px;
+    background-color: #f8f9fa;
 }
-
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
+.root{
+    --primary-color: #0366d6;
 }
-
-.layout {
-    display: flex;
-    gap: 20px;
-}
-
-.sidebar {
-    flex: 1;
-    max-width: 250px;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.content {
-    flex: 3;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
 .file-list {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
 }
-
+.file-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 30px;
+    height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+.tag {
+    display: inline-block;
+    background-color: rgba(3, 102, 214, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    margin-right: 5px;
+    color: var(--primary-color);
+}
 .file-item {
-    padding: 8px 12px;
-    background: #f0f0f0;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.file-item:hover {
-    background: #e0e0e0;
-}
-
-.file-item.active {
-    background: #3498db;
-    color: white;
-}
-
-.markdown-rendered {
-    min-height: 300px;
-}
-
-.markdown-rendered h1, 
-.markdown-rendered h2, 
-.markdown-rendered h3 {
-    color: #2c3e50;
-    margin-top: 1.5em;
-    margin-bottom: 0.5em;
-}
-
-.markdown-rendered p {
-    margin-bottom: 1em;
-}
-
-.markdown-rendered pre {
-    background: #f8f8f8;
-    padding: 15px;
-    border-radius: 4px;
-    overflow-x: auto;
-}
-
-.markdown-rendered code {
-    font-family: 'Courier New', Courier, monospace;
-    background: #f8f8f8;
-    padding: 2px 4px;
-    border-radius: 3px;
-}
-
-@media (max-width: 768px) {
-    .layout {
-        flex-direction: column;
-    }
-    
-    .sidebar {
-        max-width: 100%;
-    }
-}
-
-/* 原有样式保持不变，添加以下新样式 */
-
-.search-container {
-    margin-bottom: 15px;
-    display: flex;
-    gap: 5px;
-}
-
-#search-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-#search-button {
-    padding: 8px 12px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    padding: 10px 15px;
+    border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background-color 0.2s;
 }
-
-#search-button:hover {
-    background-color: #2980b9;
+.file-item:hover {
+    background-color: #f8f9fa;
 }
-
-.no-results {
-    color: #777;
-    padding: 10px;
-    text-align: center;
+.file-item.active {
+    background-color: rgba(3, 102, 214, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+.file-date {
+    font-size: 0.8em;
+    color: #6c757d;
+}
+.loading {
+    color: #6c757d;
     font-style: italic;
 }
-
-.back-button {
-  position: absolute;
-  top: 10px;      /* 距离顶部20像素 */
-  left: 10px;     /* 距离左侧20像素 */
-  padding: 10px 20px;
-  background-color: #0366d6;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* 任务列表样式 */
+.task-list-item {
+    list-style-type: none;
 }
-
-/* 悬停状态 */
-.back-button:hover {
-  background-color: #035fc7;
+.task-list-item-checkbox {
+    margin-right: 8px;
 }
-
-/* 在文件末尾添加以下样式 */
-
-/* 标签搜索提示 */
-.search-hint {
-    font-size: 0.8em;
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+}
+table, th, td {
+    border: 1px solid #ddd;
+}
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+th {
+    background-color: #f2f2f2;
+}
+/* 脚注样式 */
+.footnotes {
+    font-size: 0.9em;
     color: #666;
-    margin-top: 5px;
+    border-top: 1px solid #eee;
+    margin-top: 20px;
+    padding-top: 10px;
 }
-
-/* 文件项样式调整 */
-.file-item {
-    padding: 10px 12px;
-    background: #f0f0f0;
-    border-radius: 4px;
+/* 图表容器 */
+.mermaid, .math-container {
+    margin: 20px 0;
+    text-align: center;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+/* 图片样式 */
+.markdown-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin: 15px 0;
+    cursor: zoom-in;
+    transition: transform 0.2s;
+}
+.markdown-image:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.image-caption {
+    text-align: center;
+    font-size: 0.9em;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+/* 图片画廊容器 */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+.image-gallery img {
+    flex: 1 1 calc(33.333% - 10px);
+    min-width: 150px;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 5px;
     cursor: pointer;
+}
+
+/* 添加在文件末尾 */
+/* 标题样式 */
+h1 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eee;
+}
+
+h2 {
+    font-size: 1.75rem;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.75rem;
+}
+
+/* 列表样式 */
+ul, ol {
+    padding-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
+}
+
+/* 强调文本样式 */
+strong {
+    font-weight: bold;
+    color: #333;
+}
+
+/* 时间表样式 */
+.day-schedule {
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.day-schedule h3 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+/* 添加在文件末尾 */
+.search-container {
+    margin-bottom: 15px;
+}
+
+#search-input {
+    border-radius: 20px;
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    box-shadow: none;
+}
+
+#search-input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(3, 102, 214, 0.25);
+}
+
+.btn-back {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
     transition: all 0.2s;
-    margin-bottom: 8px;
+    border: none;
 }
 
-.file-item:hover {
-    background: #e0e0e0;
-}
-
-.file-item.active {
-    background: #3498db;
-    color: white;
-}
-
-.file-item.active .tag {
-    color: #e0e0e0 !important;
-}
-
-/* 在文件末尾添加以下样式 */
-
-.refresh-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  padding: 10px 20px;
-  background-color: #0366d6;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-/* 悬停状态 */
-.refresh-button:hover {
-  background-color: #035fc7;
+.btn-back:hover {
+    background-color: #0356b6 !important;
+    color: white !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
