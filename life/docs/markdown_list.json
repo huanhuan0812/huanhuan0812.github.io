@@ -25,5 +25,18 @@
       ]
     },
     "has_content": true
+  },
+  {
+    "filename": "travel.md",
+    "path": "travel.md",
+    "frontmatter": {
+      "title": "旅行准备",
+      "date": "2025-08-01",
+      "tags": [
+        "旅行",
+        "注意事项"
+      ]
+    },
+    "has_content": true
   }
 ]
