@@ -270,6 +270,7 @@ async function renderFileList() {
 }
 
 // 初始化
+// 在文件末尾的DOMContentLoaded事件监听器中添加以下代码
 document.addEventListener('DOMContentLoaded', () => {
     renderFileList();
     
@@ -281,4 +282,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderMathElements() {
         renderMath();
     }
+    
+    // 侧边栏切换逻辑
+    const sidebar = document.getElementById('sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarClose = document.getElementById('sidebar-close');
+    const overlay = document.getElementById('overlay');
+    
+    function toggleSidebar() {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('d-none');
+        document.body.classList.toggle('no-scroll');
+    }
+    
+    sidebarToggle.addEventListener('click', toggleSidebar);
+    sidebarClose.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+    
+    // 点击文件项时在移动端关闭侧边栏
+    document.addEventListener('click', function(e) {
+        if (window.innerWidth <= 767.98 && e.target.closest('.file-item')) {
+            toggleSidebar();
+        }
+    });
+    
+    // 在侧边栏切换逻辑部分添加窗口大小监听
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 767.98) {
+            // 在桌面尺寸时确保侧边栏可见
+            sidebar.classList.remove('show');
+            overlay.classList.add('d-none');
+        }
+    });
 });
