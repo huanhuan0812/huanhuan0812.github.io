@@ -83,4 +83,4 @@
   图片压缩工具，减少 Web 资源体积。
 - **WebPageTest** ([https://www.webpagetest.org](https://www.webpagetest.org))  
   网站性能测试工具。
-- **颜色混合预览**([](./colormixing.html))
+- [**颜色混合预览**](./colormixing.html)
