@@ -1,8 +1,12 @@
 {
     "repositories": [
         {
+            "name": "huanhuan0812/WebDesigner",
+            "description": "design a web page in GUI application"
+        },
+        {
             "name": "huanhuan0812/classtools",
-            "description": "some tools"
+            "description": "一些工具"
         },
         {
             "name": "huanhuan0812/runtime1",
@@ -15,6 +19,10 @@
         {
             "name": "huanhuan0812/classtools",
             "description": "一些班级的工具"
+        },
+        {
+            "name": "huanhuan0812/library",
+            "description": "一些支持库/头文件"
         },
         {
             "name": "huanhuan0812/airjumpmod-1.21",
