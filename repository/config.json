@@ -21,8 +21,16 @@
             "description": "一些班级的工具"
         },
         {
+            "name": "huanhuan0812/winqtdeployer",
+            "description": "use windeployqt in GUI"
+        },
+        {
             "name": "huanhuan0812/library",
             "description": "一些支持库/头文件"
+        },
+        {
+            "name": "huanhuan0812/rand-simple",
+            "description": "a simple rand app"
         },
         {
             "name": "huanhuan0812/airjumpmod-1.21",
