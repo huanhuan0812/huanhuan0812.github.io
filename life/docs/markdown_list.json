@@ -1,5 +1,18 @@
 [
   {
+    "filename": "about.md",
+    "path": "about.md",
+    "frontmatter": {
+      "title": "关于我",
+      "date": "2025-07-31",
+      "tags": [
+        "我",
+        "介绍"
+      ]
+    },
+    "has_content": true
+  },
+  {
     "filename": "2025-07-29.md",
     "path": "2025-07-29.md",
     "frontmatter": {
@@ -9,19 +22,6 @@
         "杭州",
         "旅行",
         "计划"
-      ]
-    },
-    "has_content": true
-  },
-  {
-    "filename": "about.md",
-    "path": "about.md",
-    "frontmatter": {
-      "title": "关于我",
-      "date": "2025-07-31",
-      "tags": [
-        "我",
-        "介绍"
       ]
     },
     "has_content": true
