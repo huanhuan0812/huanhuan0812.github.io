@@ -33,6 +33,22 @@
             "description": "a simple rand app"
         },
         {
+            "name": "huanhuan0812/rand-full",
+            "description": "a rand app"
+        },
+        {
+            "name": "huanhuan0812/SvgViewer",
+            "description": "An application for batch preview of SVG images"
+        },
+        {
+            "name": "huanhuan0812/MDforQt",
+            "description": "Implementation of Material Design style controls based on Qt"
+        },
+        {
+            "name": "huanhuan0812/onduty",
+            "description": ""
+        },
+        {
             "name": "huanhuan0812/airjumpmod-1.21",
             "description": "A minecraft mod"
         }
