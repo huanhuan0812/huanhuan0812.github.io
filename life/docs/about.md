@@ -41,7 +41,3 @@ tags:
   - kernel
   - Dynamic Restore FS
   - Class OS
----
-Addition:
-
-I :heart: KYH
