@@ -5,6 +5,10 @@
             "description": "design a web page in GUI application"
         },
         {
+            "name": "huanhuan0812/qtcsv",
+            "description": "a csv model for qt"
+        },
+        {
             "name": "huanhuan0812/classtools",
             "description": "一些工具"
         },
