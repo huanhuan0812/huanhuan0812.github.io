@@ -5,6 +5,10 @@
             "description": "design a web page in GUI application"
         },
         {
+            "name": "huanhuan0812/FFmpegGui-Android",
+            "description": "A gui application with ffmpeg for android"
+        },
+        {
             "name": "huanhuan0812/qtcsv",
             "description": "a csv model for qt"
         },
