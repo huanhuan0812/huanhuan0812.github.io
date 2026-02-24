@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as a}from"./chunks/framework.B3WmzCCM.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{"layout":"docs"},"headers":[],"relativePath":"en/api/qtcsv/index.md","filePath":"en/api/qtcsv/index.md"}'),n={name:"en/api/qtcsv/index.md"};function s(c,o,r,i,d,p){return t(),a("div")}const f=e(n,[["render",s]]);export{m as __pageData,f as default};
