@@ -1,1 +1,0 @@
-import{_ as e,o as a,c as t}from"./chunks/framework.D3PFo-vo.js";const _=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"programming/bash/index.md","filePath":"programming/bash/index.md"}'),r={name:"programming/bash/index.md"};function n(o,s,i,c,m,d){return a(),t("div")}const f=e(r,[["render",n]]);export{_ as __pageData,f as default};
