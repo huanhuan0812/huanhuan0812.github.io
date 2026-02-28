@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朋友圈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .moment-card {
+            background: white;
+            border-radius: 0;
+            padding: 24px 32px;
+            margin-bottom: 1px;
+            box-shadow: none;
+            border-bottom: 1px solid #e5e7eb;
+            width: 100%;
+            text-align: left;
+        }
+        
+        .moment-card:first-child {
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .moment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            width: 100%;
+        }
+        
+        .moment-date {
+            color: #6b7280;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .moment-date-icon {
+            color: #9ca3af;
+        }
+        
+        .moment-time-badge {
+            color: #9ca3af;
+            font-size: 13px;
+            background: #f3f4f6;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .moment-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2563eb;
+            margin-bottom: 12px;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .moment-content {
+            color: #1f2937;
+            line-height: 1.8;
+            font-size: 15px;
+            text-align: left;
+            width: 100%;
+        }
+        
+        .moment-content p {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+        
+        .moment-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: block;
+        }
+        
+        .moment-content blockquote {
+            background: #f9fafb;
+            border-left: 4px solid #2563eb;
+            padding: 12px 20px;
+            margin: 16px 0;
+            border-radius: 0 4px 4px 0;
+            color: #4b5563;
+            font-style: italic;
+            text-align: left;
+        }
+        
+        .moment-content pre {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        
+        .moment-content code {
+            font-family: 'SF Mono', Monaco, 'Roboto Mono', monospace;
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #2563eb;
+        }
+        
+        .moment-content pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+        
+        .moment-content a {
+            color: #2563eb;
+            text-decoration: none;
+        }
+        
+        .moment-content a:hover {
+            text-decoration: underline;
+        }
+        
+        .moment-content ul, 
+        .moment-content ol {
+            padding-left: 24px;
+            margin: 12px 0;
+            text-align: left;
+        }
+        
+        .moment-content li {
+            margin: 4px 0;
+            text-align: left;
+        }
+        
+        .moment-content h1,
+        .moment-content h2,
+        .moment-content h3,
+        .moment-content h4,
+        .moment-content h5,
+        .moment-content h6 {
+            text-align: left;
+            margin: 20px 0 12px 0;
+        }
+        
+        .moment-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            text-align: left;
+        }
+        
+        .moment-content th,
+        .moment-content td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            text-align: left;
+        }
+        
+        .moment-content th {
+            background: #f9fafb;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 640px) {
+            body {
+                padding: 0;
+            }
+            
+            .moment-card {
+                padding: 20px 16px;
+            }
+            
+            .moment-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+        
+        /* 让所有块级元素左对齐 */
+        div, section, article, main, header, footer {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+          <div class="moment-card">
+              <div class="moment-header">
+                  <div class="moment-date">
+                      <span class="moment-date-icon">📅</span>
+                      <span>2026年2月27日星期五</span>
+                      <span class="moment-time-badge">20:00</span>
+                  </div>
+              </div>
+              
+              
+              <div class="moment-title">
+                  📌 今天天气真好 🌞
+              </div>
+              
+              
+              <div class="moment-content">
+                  <p>今天是个阳光明媚的日子，适合出去走走。</p>
+<p>看到路边的樱花都开了，心情特别好！</p>
+
+              </div>
+          </div>
+        
+    </div>
+</body>
+</html>
