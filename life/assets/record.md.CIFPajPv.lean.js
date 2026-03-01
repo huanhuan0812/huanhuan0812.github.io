@@ -1,0 +1,1 @@
+import{_ as e,o as t,c as r}from"./chunks/framework.Cdqgf4K-.js";const m=JSON.parse('{"title":"","description":"","frontmatter":{"hide":true},"headers":[],"relativePath":"record.md","filePath":"record.md","lastUpdated":1772336970000}'),a={name:"record.md"};function o(c,d,s,n,p,i){return t(),r("div")}const f=e(a,[["render",o]]);export{m as __pageData,f as default};
