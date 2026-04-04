@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>huanhuan0812 Release </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>huanhuan0812 Release</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <!-- marked & DOMPurify -->
@@ -37,7 +37,6 @@
             margin: 0 auto;
         }
 
-        /* 头部 */
         .header {
             text-align: center;
             margin-bottom: 2rem;
@@ -79,7 +78,7 @@
             padding-top: 0.5rem;
         }
 
-        /* Token 状态条 (更简洁) */
+        /* Token 状态栏 */
         .token-status-bar {
             background: white;
             border-radius: 48px;
@@ -126,7 +125,7 @@
             margin-left: 8px;
         }
 
-        /* 模态框 (Token 设置弹窗 + 帮助) */
+        /* Token 模态框 */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -154,11 +153,6 @@
             max-width: 460px;
             box-shadow: 0 25px 40px rgba(0,0,0,0.25);
             overflow: hidden;
-            animation: modalSlide 0.2s ease;
-        }
-        @keyframes modalSlide {
-            from { transform: scale(0.96); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
         }
         .modal-header {
             padding: 1.2rem 1.5rem;
@@ -174,7 +168,6 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-color);
         }
         .close-modal-btn {
             background: none;
@@ -182,22 +175,11 @@
             font-size: 1.4rem;
             cursor: pointer;
             color: #94a3b8;
-            transition: color 0.2s;
         }
         .close-modal-btn:hover { color: #dc2626; }
-        .modal-body {
-            padding: 1.5rem;
-        }
-        .input-group {
-            margin-bottom: 1.2rem;
-        }
-        .input-group label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: block;
-            margin-bottom: 6px;
-            color: #334155;
-        }
+        .modal-body { padding: 1.5rem; }
+        .input-group { margin-bottom: 1.2rem; }
+        .input-group label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 6px; }
         .token-input-wrapper {
             display: flex;
             align-items: center;
@@ -206,9 +188,6 @@
             border: 1px solid #e2e8f0;
             padding: 0.2rem 0.8rem;
         }
-        .token-input-wrapper i {
-            color: #64748b;
-        }
         .token-input-wrapper input {
             border: none;
             background: transparent;
@@ -216,49 +195,13 @@
             width: 100%;
             outline: none;
             font-family: monospace;
-            font-size: 0.8rem;
         }
-        .help-text {
-            font-size: 0.7rem;
-            color: #475569;
-            margin-top: 8px;
-            line-height: 1.4;
-        }
-        .help-text a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 1.5rem;
-        }
-        .btn-primary {
-            background: var(--primary-color);
-            border: none;
-            padding: 0.6rem 1rem;
-            border-radius: 40px;
-            color: white;
-            font-weight: 500;
-            cursor: pointer;
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-secondary {
-            background: white;
-            border: 1px solid #cbd5e1;
-            padding: 0.6rem 1rem;
-            border-radius: 40px;
-            cursor: pointer;
-            flex: 1;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
+        .help-text { font-size: 0.7rem; color: #475569; margin-top: 8px; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 1.5rem; }
+        .btn-primary { background: var(--primary-color); border: none; padding: 0.6rem 1rem; border-radius: 40px; color: white; font-weight: 500; cursor: pointer; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-secondary { background: white; border: 1px solid #cbd5e1; padding: 0.6rem 1rem; border-radius: 40px; cursor: pointer; flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+
+        /* 状态区 */
         .status-area { text-align: center; margin: 1rem auto; }
         .loader { display: inline-flex; align-items: center; gap: 10px; background: white; padding: 0.6rem 1.2rem; border-radius: 48px; box-shadow: var(--card-shadow); }
         .spinner { width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -301,47 +244,76 @@
         .btn-link:hover { background: var(--primary-color); border-color: var(--primary-color); color: white; }
         .btn-primary-sm { background: var(--primary-color); border-color: var(--primary-color); color: white; }
         
-        /* 向下展开区域 - 美化和主页面贴合 */
-        .expand-area {
+        /* 电脑端: 弹窗样式 (版本详情弹窗) */
+        .detail-modal {
+            max-width: 750px;
+            width: 90%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 1.8rem;
+            overflow: hidden;
+        }
+        .detail-modal .modal-body {
+            overflow-y: auto;
+            padding: 1.2rem 1.5rem;
+        }
+        .versions-list-modal {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .version-item-modal {
+            background: #f9fafb;
+            border-radius: 1rem;
+            padding: 0.9rem 1rem;
+            border-left: 3px solid var(--primary-color);
+        }
+        .version-title-modal { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+        .version-downloads-modal { margin: 8px 0 6px; display: flex; flex-wrap: wrap; gap: 8px; }
+        .download-link { background: white; border: 1px solid #cbd5e1; padding: 0.2rem 0.6rem; border-radius: 30px; font-size: 0.7rem; text-decoration: none; color: var(--primary-color); display: inline-flex; align-items: center; gap: 4px; }
+        .version-notes-modal { font-size: 0.75rem; margin-top: 6px; background: white; padding: 0.4rem 0.6rem; border-radius: 12px; max-height: 100px; overflow-y: auto; }
+
+        /* 手机端: 向下展开区域 (仅手机生效) */
+        .mobile-expand-area {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: #fefce8;
             border-radius: 0 0 1.2rem 1.2rem;
             margin-top: -0.3rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
-        .expand-area.open {
+        .mobile-expand-area.open {
             max-height: 650px;
             overflow-y: auto;
         }
-        .versions-container {
+        .mobile-versions-container {
             padding: 1rem 1.2rem 1.2rem;
             display: flex;
             flex-direction: column;
             gap: 0.9rem;
         }
-        .version-item {
+        .mobile-version-item {
             background: white;
             border-radius: 1rem;
             padding: 0.8rem 1rem;
             border-left: 3px solid var(--primary-color);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: 0.1s;
         }
-        .version-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-        .version-tag-name { font-weight: 700; font-family: monospace; background: #e2e8f0; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
-        .version-date { font-size: 0.65rem; color: #5b6e8c; display: flex; align-items: center; gap: 4px; }
-        .version-downloads { margin: 6px 0 5px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-        .download-link { background: #f8fafc; border: 1px solid #cbd5e1; padding: 0.2rem 0.6rem; border-radius: 30px; font-size: 0.65rem; text-decoration: none; color: var(--primary-color); display: inline-flex; align-items: center; gap: 4px; transition: 0.1s; }
-        .download-link:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
-        .version-notes-preview { font-size: 0.7rem; color: #334155; margin-top: 6px; background: #f9fafb; padding: 0.4rem 0.6rem; border-radius: 12px; max-height: 80px; overflow-y: auto; }
-        .expand-loading, .no-versions { text-align: center; padding: 1.2rem; color: #6b7280; font-size: 0.8rem; }
         .expand-header { display: flex; justify-content: flex-end; padding: 0.4rem 1rem 0; }
         .close-expand-btn { background: transparent; border: none; font-size: 0.65rem; color: #6b7280; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; }
-        .close-expand-btn:hover { background: #e5e7eb; }
+
         footer { text-align: center; margin-top: 2.5rem; font-size: 0.7rem; color: #6c757d; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
-        @media (max-width: 640px) { body { padding: 1rem; } .cards-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+        /* 隐藏手机端在电脑上的额外样式 */
+        .only-mobile-expand { display: block; }
+        .only-pc-modal { display: none; }
+        @media (min-width: 769px) {
+            .only-mobile-expand { display: none; }
+            .only-pc-modal { display: block; }
+        }
     </style>
 </head>
 <body>
@@ -351,62 +323,47 @@
             <img src="https://github.com/huanhuan0812.png" alt="avatar" onerror="this.src='https://ui-avatars.com/api/?name=huanhuan0812&background=2563eb&color=fff'">
             <h1>huanhuan0812 <span id="cacheIndicator" class="cache-badge"><i class="fas fa-database"></i> 缓存就绪</span></h1>
         </div>
-        <div class="sub"><i class="fas fa-tag"></i>点击「全部版本」向下展开</div>
     </div>
 
-    <!-- Token 状态栏 + 设置按钮 -->
     <div class="token-status-bar">
-        <div class="token-badge" id="tokenStatusBadge">
-            <i class="fas fa-circle"></i> 未使用Token
-        </div>
-        <button id="openTokenModalBtn" class="btn-token-settings">
-            <i class="fas fa-sliders-h"></i> Token 设置
-        </button>
+        <div class="token-badge" id="tokenStatusBadge"><i class="fas fa-circle"></i> 未使用Token</div>
+        <button id="openTokenModalBtn" class="btn-token-settings"><i class="fas fa-sliders-h"></i> Token 设置</button>
     </div>
 
     <div id="statusContainer" class="status-area"></div>
     <div id="cardsContainer" class="cards-grid"></div>
-    <footer><i class="fas fa-shield-alt"></i> Token提升速率限制至5000次/小时</footer>
 </div>
 
-<!-- Token 设置弹窗（含帮助说明） -->
+<!-- Token 设置弹窗 -->
 <div id="tokenModal" class="modal-overlay">
     <div class="token-modal">
-        <div class="modal-header">
-            <h3><i class="fas fa-key"></i> GitHub Token 配置</h3>
-            <button class="close-modal-btn" id="closeTokenModalBtn">&times;</button>
-        </div>
+        <div class="modal-header"><h3><i class="fas fa-key"></i> GitHub Token</h3><button class="close-modal-btn" id="closeTokenModalBtn">&times;</button></div>
         <div class="modal-body">
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Personal Access Token</label>
-                <div class="token-input-wrapper">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="tokenInputDialog" placeholder="输入 token (classic)" autocomplete="off">
-                </div>
-                <div class="help-text">
-                    ⚡ 未认证限制 <strong>60次/小时</strong> · 使用Token后提升至 <strong>5000次/小时</strong><br>
-                    🔧 <a href="https://github.com/settings/tokens" target="_blank">获取Token</a> → 勾选 <code>public_repo</code> 权限
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button id="saveTokenDialogBtn" class="btn-primary"><i class="fas fa-save"></i> 保存并刷新</button>
-                <button id="clearTokenDialogBtn" class="btn-secondary"><i class="fas fa-trash-alt"></i> 清除Token</button>
-            </div>
+            <div class="input-group"><label>Personal Access Token</label><div class="token-input-wrapper"><i class="fas fa-key"></i><input type="password" id="tokenInputDialog" placeholder="输入 token (classic)" autocomplete="off"></div><div class="help-text">⚡ 未认证60次/小时 → Token后5000次/小时 · <a href="https://github.com/settings/tokens" target="_blank">获取Token</a> 勾选 public_repo</div></div>
+            <div class="modal-actions"><button id="saveTokenDialogBtn" class="btn-primary"><i class="fas fa-save"></i> 保存</button><button id="clearTokenDialogBtn" class="btn-secondary"><i class="fas fa-trash-alt"></i> 清除</button></div>
         </div>
+    </div>
+</div>
+
+<!-- 电脑端：版本详情弹窗 (全局) -->
+<div id="pcDetailModal" class="modal-overlay">
+    <div class="detail-modal">
+        <div class="modal-header"><h3 id="pcModalTitle"><i class="fab fa-github"></i> 仓库版本</h3><button class="close-modal-btn" id="closePcModalBtn">&times;</button></div>
+        <div class="modal-body" id="pcModalBody"><div class="loading-small">加载中...</div></div>
     </div>
 </div>
 
 <script>
     (function() {
         const USERNAME = 'huanhuan0812';
-        const CACHE_KEY_LATEST = 'github_latest_release_data_v3';
-        const CACHE_TIMESTAMP_KEY = 'github_cache_timestamp_v3';
+        const CACHE_KEY_LATEST = 'github_latest_release_data_adaptive';
+        const CACHE_TIMESTAMP_KEY = 'github_cache_timestamp_adaptive';
         const TOKEN_STORAGE_KEY = 'github_token_for_releases';
         const CACHE_TTL = 30 * 60 * 1000;
 
-        // DOM
+        // DOM elements
         const tokenStatusBadge = document.getElementById('tokenStatusBadge');
-        const openModalBtn = document.getElementById('openTokenModalBtn');
+        const openTokenModalBtn = document.getElementById('openTokenModalBtn');
         const tokenModal = document.getElementById('tokenModal');
         const closeTokenModalBtn = document.getElementById('closeTokenModalBtn');
         const tokenInputDialog = document.getElementById('tokenInputDialog');
@@ -415,9 +372,14 @@
         const cacheIndicator = document.getElementById('cacheIndicator');
         const statusDiv = document.getElementById('statusContainer');
         const cardsGrid = document.getElementById('cardsContainer');
+        // 电脑弹窗相关
+        const pcModal = document.getElementById('pcDetailModal');
+        const pcModalTitle = document.getElementById('pcModalTitle');
+        const pcModalBody = document.getElementById('pcModalBody');
+        const closePcModalBtn = document.getElementById('closePcModalBtn');
 
         let currentToken = localStorage.getItem(TOKEN_STORAGE_KEY) || '';
-        updateTokenUI();
+        const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
         function updateTokenUI() {
             if (currentToken) {
@@ -430,21 +392,15 @@
                 tokenInputDialog.value = '';
             }
         }
+        function openTokenModal() { tokenModal.classList.add('active'); }
+        function closeTokenModal() { tokenModal.classList.remove('active'); }
+        openTokenModalBtn.addEventListener('click', openTokenModal);
+        closeTokenModalBtn.addEventListener('click', closeTokenModal);
+        tokenModal.addEventListener('click', (e) => { if (e.target === tokenModal) closeTokenModal(); });
 
-        function openModal() { tokenModal.classList.add('active'); }
-        function closeModal() { tokenModal.classList.remove('active'); }
-
-        openModalBtn.addEventListener('click', openModal);
-        closeTokenModalBtn.addEventListener('click', closeModal);
-        tokenModal.addEventListener('click', (e) => { if (e.target === tokenModal) closeModal(); });
-
-        // 保存 token
         async function saveToken() {
             let raw = tokenInputDialog.value.trim();
-            if (raw === '••••••••••••••••' && currentToken) {
-                closeModal();
-                return;
-            }
+            if (raw === '••••••••••••••••' && currentToken) { closeTokenModal(); return; }
             if (raw) {
                 localStorage.setItem(TOKEN_STORAGE_KEY, raw);
                 currentToken = raw;
@@ -456,13 +412,11 @@
                 tokenInputDialog.value = '';
                 updateTokenUI();
             }
-            // 清除缓存并重新拉取
             localStorage.removeItem(CACHE_KEY_LATEST);
             localStorage.removeItem(CACHE_TIMESTAMP_KEY);
-            closeModal();
+            closeTokenModal();
             await fetchFreshDataAndCache();
         }
-
         async function clearToken() {
             localStorage.removeItem(TOKEN_STORAGE_KEY);
             currentToken = '';
@@ -470,14 +424,12 @@
             updateTokenUI();
             localStorage.removeItem(CACHE_KEY_LATEST);
             localStorage.removeItem(CACHE_TIMESTAMP_KEY);
-            closeModal();
+            closeTokenModal();
             await fetchFreshDataAndCache();
         }
-
         saveTokenDialogBtn.addEventListener('click', saveToken);
         clearTokenDialogBtn.addEventListener('click', clearToken);
 
-        // fetch 封装
         async function fetchJSON(url, options = {}) {
             const headers = { 'Accept': 'application/vnd.github.v3+json', ...options.headers };
             if (currentToken) headers['Authorization'] = `Bearer ${currentToken}`;
@@ -508,67 +460,90 @@
         function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
         function formatDate(iso) { if (!iso) return '未知'; const d = new Date(iso); return d.toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }); }
 
-        // 加载全部版本 (优雅样式)
-        async function fetchAndRenderVersions(repoName, expandContainer) {
-            expandContainer.innerHTML = `<div class="expand-loading"><i class="fas fa-spinner fa-pulse"></i> 加载 ${repoName} 全部版本...</div>`;
-            try {
-                const releases = await fetchJSON(`https://api.github.com/repos/${USERNAME}/${repoName}/releases?per_page=100`);
-                if (!releases || releases.length === 0) {
-                    expandContainer.innerHTML = `<div class="no-versions"><i class="fas fa-inbox"></i> 暂无任何 Release</div>`;
-                    return;
-                }
-                releases.sort((a,b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
-                let html = `<div class="versions-container">`;
-                for (const rel of releases) {
-                    const tag = rel.tag_name;
-                    const name = rel.name || tag;
-                    const date = rel.published_at || rel.created_at;
-                    const prereleaseBadge = rel.prerelease ? '<span style="background:#f97316; font-size:0.6rem; padding:0.1rem 0.5rem; border-radius:20px; color:white;"><i class="fas fa-flask"></i> 预发布</span>' : '';
-                    let assetsHtml = '';
-                    if (rel.assets && rel.assets.length) {
-                        assetsHtml = `<div><strong><i class="fas fa-paperclip"></i> 附件:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;">`;
-                        rel.assets.forEach(asset => {
-                            assetsHtml += `<a href="${asset.browser_download_url}" target="_blank" class="download-link"><i class="fas fa-download"></i> ${escapeHtml(asset.name)} (${(asset.size/1024).toFixed(1)} KB)</a>`;
-                        });
-                        assetsHtml += `</div></div>`;
-                    } else { assetsHtml = `<div><a href="${rel.html_url}" target="_blank" class="download-link"><i class="fab fa-github"></i> Release 页</a></div>`; }
-                    const zipUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.zip`;
-                    const tarUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.tar.gz`;
-                    const sourceLinks = `<div style="display:flex; gap:6px; margin-top:4px;"><a href="${zipUrl}" class="download-link" target="_blank"><i class="fas fa-file-archive"></i> ZIP源码</a><a href="${tarUrl}" class="download-link" target="_blank"><i class="fas fa-compress"></i> TAR.GZ</a></div>`;
-                    const shortBody = rel.body ? renderMarkdown(rel.body.substring(0, 320) + (rel.body.length > 320 ? '…' : '')) : '<em>无说明</em>';
-                    html += `<div class="version-item">
-                        <div class="version-title"><span class="version-tag-name"><i class="fas fa-tag"></i> ${escapeHtml(name)}</span> ${prereleaseBadge}<span class="version-date"><i class="far fa-calendar-alt"></i> ${formatDate(date)}</span></div>
-                        <div class="version-downloads">${assetsHtml}</div>${sourceLinks}
-                        <div class="version-notes-preview"><strong><i class="fas fa-align-left"></i> 说明：</strong><div style="margin-top:4px;">${shortBody}</div></div>
-                    </div>`;
-                }
-                html += `</div>`;
-                expandContainer.innerHTML = html;
-            } catch (err) {
-                expandContainer.innerHTML = `<div class="error-message" style="font-size:0.7rem; margin:0.5rem;"><i class="fas fa-exclamation-circle"></i> ${err.message}</div>`;
-            }
+        // 获取某个仓库的全部版本数据 (通用)
+        async function fetchAllReleases(repoName) {
+            return await fetchJSON(`https://api.github.com/repos/${USERNAME}/${repoName}/releases?per_page=100`);
         }
 
-        // 切换展开区域
-        function toggleExpand(wrapper, repoName) {
-            const expandDiv = wrapper.querySelector('.expand-area');
+        // 渲染版本列表 HTML (用于弹窗或手机展开)
+        function renderVersionsHtml(releases, repoName) {
+            if (!releases || releases.length === 0) return `<div class="no-versions"><i class="fas fa-inbox"></i> 暂无 Release</div>`;
+            releases.sort((a,b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
+            let html = `<div class="versions-list-modal">`;
+            for (const rel of releases) {
+                const tag = rel.tag_name;
+                const name = rel.name || tag;
+                const date = rel.published_at || rel.created_at;
+                const prereleaseBadge = rel.prerelease ? '<span style="background:#f97316; font-size:0.6rem; padding:0.1rem 0.5rem; border-radius:20px; color:white;"><i class="fas fa-flask"></i> 预发布</span>' : '';
+                let assetsHtml = '';
+                if (rel.assets && rel.assets.length) {
+                    assetsHtml = `<div><strong><i class="fas fa-paperclip"></i> 附件:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;">`;
+                    rel.assets.forEach(asset => {
+                        assetsHtml += `<a href="${asset.browser_download_url}" target="_blank" class="download-link"><i class="fas fa-download"></i> ${escapeHtml(asset.name)} (${(asset.size/1024).toFixed(1)} KB)</a>`;
+                    });
+                    assetsHtml += `</div></div>`;
+                } else { assetsHtml = `<div><a href="${rel.html_url}" target="_blank" class="download-link"><i class="fab fa-github"></i> Release 页</a></div>`; }
+                const zipUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.zip`;
+                const tarUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.tar.gz`;
+                const sourceLinks = `<div style="display:flex; gap:6px; margin-top:4px;"><a href="${zipUrl}" class="download-link" target="_blank"><i class="fas fa-file-archive"></i> ZIP源码</a><a href="${tarUrl}" class="download-link" target="_blank"><i class="fas fa-compress"></i> TAR.GZ</a></div>`;
+                const shortBody = rel.body ? renderMarkdown(rel.body.substring(0, 320) + (rel.body.length > 320 ? '…' : '')) : '<em>无说明</em>';
+                html += `<div class="version-item-modal">
+                    <div class="version-title-modal"><span class="version-tag-name" style="font-weight:700; background:#e2e8f0; padding:0.2rem 0.6rem; border-radius:20px;"><i class="fas fa-tag"></i> ${escapeHtml(name)}</span> ${prereleaseBadge}<span class="version-date"><i class="far fa-calendar-alt"></i> ${formatDate(date)}</span></div>
+                    <div class="version-downloads-modal">${assetsHtml}</div>${sourceLinks}
+                    <div class="version-notes-modal"><strong><i class="fas fa-align-left"></i> 说明：</strong><div style="margin-top:4px;">${shortBody}</div></div>
+                </div>`;
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        // 电脑端：打开弹窗显示版本
+        async function showPcDetail(repoName) {
+            pcModalTitle.innerHTML = `<i class="fab fa-github"></i> ${escapeHtml(repoName)} · 全部Release`;
+            pcModalBody.innerHTML = `<div class="expand-loading"><i class="fas fa-spinner fa-pulse"></i> 加载版本列表...</div>`;
+            pcModal.classList.add('active');
+            try {
+                const releases = await fetchAllReleases(repoName);
+                const html = renderVersionsHtml(releases, repoName);
+                pcModalBody.innerHTML = html;
+            } catch (err) {
+                pcModalBody.innerHTML = `<div class="error-message">加载失败: ${err.message}</div>`;
+            }
+        }
+        function closePcModal() { pcModal.classList.remove('active'); }
+        closePcModalBtn.addEventListener('click', closePcModal);
+        pcModal.addEventListener('click', (e) => { if (e.target === pcModal) closePcModal(); });
+
+        // 手机端：切换下拉展开区域并懒加载
+        async function toggleMobileExpand(wrapper, repoName) {
+            const expandDiv = wrapper.querySelector('.mobile-expand-area');
             const isOpen = expandDiv.classList.contains('open');
             if (!isOpen) {
                 expandDiv.classList.add('open');
                 if (!expandDiv.hasAttribute('data-loaded')) {
                     expandDiv.setAttribute('data-loaded', 'false');
-                    fetchAndRenderVersions(repoName, expandDiv).then(() => {
+                    expandDiv.innerHTML = `<div class="expand-loading"><i class="fas fa-spinner fa-pulse"></i> 加载版本列表...</div>`;
+                    try {
+                        const releases = await fetchAllReleases(repoName);
+                        const html = renderVersionsHtml(releases, repoName);
+                        // 添加收起按钮区域
+                        expandDiv.innerHTML = `<div class="expand-header"><button class="close-expand-btn"><i class="fas fa-times-circle"></i> 收起</button></div><div class="mobile-versions-container">${html}</div>`;
+                        const closeBtn = expandDiv.querySelector('.close-expand-btn');
+                        if (closeBtn) closeBtn.addEventListener('click', (e) => { e.stopPropagation(); expandDiv.classList.remove('open'); });
                         expandDiv.setAttribute('data-loaded', 'true');
-                    });
+                    } catch (err) {
+                        expandDiv.innerHTML = `<div class="error-message" style="margin:0.5rem;">加载失败: ${err.message}</div>`;
+                    }
                 }
             } else {
                 expandDiv.classList.remove('open');
             }
         }
 
-        // 渲染卡片
+        // 渲染卡片（根据设备决定使用弹窗还是下拉）
         function renderCards(reposData) {
             cardsGrid.innerHTML = '';
+            const useMobile = window.matchMedia('(max-width: 768px)').matches;
             for (const item of reposData) {
                 const { repoName, repoUrl, description, stargazers, forks, latestRelease } = item;
                 const release = latestRelease;
@@ -577,45 +552,42 @@
                 const renderedNotes = renderMarkdown(release.body || '');
                 const wrapper = document.createElement('div');
                 wrapper.className = 'release-card-wrapper';
-                wrapper.innerHTML = `
-                    <div class="release-card">
-                        <div class="card-header">
-                            <div class="repo-name"><a href="${repoUrl}" target="_blank"><i class="fab fa-github"></i> ${escapeHtml(repoName)}</a><span class="badge-public"><i class="fas fa-bookmark"></i> 仓库</span></div>
-                            <div class="repo-desc"><i class="far fa-file-alt"></i> ${escapeHtml(description) || '无项目描述'}</div>
-                            <div class="stats"><span><i class="fas fa-star"></i> ${stargazers ?? 0}</span> <span><i class="fas fa-code-branch"></i> ${forks ?? 0}</span></div>
+                if (useMobile) {
+                    // 手机版：卡片 + 下方展开区
+                    wrapper.innerHTML = `
+                        <div class="release-card">
+                            <div class="card-header"><div class="repo-name"><a href="${repoUrl}" target="_blank"><i class="fab fa-github"></i> ${escapeHtml(repoName)}</a><span class="badge-public"><i class="fas fa-bookmark"></i> 仓库</span></div><div class="repo-desc"><i class="far fa-file-alt"></i> ${escapeHtml(description) || '无描述'}</div><div class="stats"><span><i class="fas fa-star"></i> ${stargazers ?? 0}</span> <span><i class="fas fa-code-branch"></i> ${forks ?? 0}</span></div></div>
+                            <div class="release-body"><div class="version-badge"><span><i class="fas fa-rocket"></i> 最新发行版</span><span class="version-tag"><i class="fas fa-hashtag"></i> ${escapeHtml(releaseName)}</span>${release.prerelease ? '<span style="background:#f97316; padding:0.2rem 0.5rem; border-radius:20px;"><i class="fas fa-flask"></i> 预发布</span>' : ''}</div><div class="release-date"><i class="far fa-clock"></i> ${formatDate(publishedAt)}</div><div class="release-notes">${renderedNotes || '<em>无说明</em>'}</div></div>
+                            <div class="card-footer"><a href="${release.html_url}" target="_blank" class="btn-link btn-primary-sm"><i class="fab fa-github"></i> 查看 Release</a><button class="btn-link toggle-mobile-btn"><i class="fas fa-chevron-circle-down"></i> 全部版本</button></div>
                         </div>
-                        <div class="release-body">
-                            <div class="version-badge"><span><i class="fas fa-rocket"></i> 最新发行版</span><span class="version-tag"><i class="fas fa-hashtag"></i> ${escapeHtml(releaseName)}</span>${release.prerelease ? '<span style="background:#f97316; padding:0.2rem 0.5rem; border-radius:20px; font-size:0.7rem;"><i class="fas fa-flask"></i> 预发布</span>' : ''}</div>
-                            <div class="release-date"><i class="far fa-clock"></i> ${formatDate(publishedAt)}</div>
-                            <div class="release-notes">${renderedNotes || '<em><i class="far fa-comment-dots"></i> 无发布说明</em>'}</div>
-                        </div>
-                        <div class="card-footer">
-                            <a href="${release.html_url}" target="_blank" class="btn-link btn-primary-sm"><i class="fab fa-github"></i> 查看 Release</a>
-                            <button class="btn-link toggle-versions-btn"><i class="fas fa-chevron-circle-down"></i> 全部版本</button>
-                        </div>
-                    </div>
-                    <div class="expand-area">
-                        <div class="expand-header"><button class="close-expand-btn"><i class="fas fa-times-circle"></i> 收起</button></div>
-                    </div>
-                `;
-                const toggleBtn = wrapper.querySelector('.toggle-versions-btn');
-                const closeBtn = wrapper.querySelector('.close-expand-btn');
-                const expandDiv = wrapper.querySelector('.expand-area');
-                toggleBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    toggleExpand(wrapper, repoName);
-                });
-                if (closeBtn) {
-                    closeBtn.addEventListener('click', (e) => {
+                        <div class="mobile-expand-area"></div>
+                    `;
+                    const toggleBtn = wrapper.querySelector('.toggle-mobile-btn');
+                    const expandDiv = wrapper.querySelector('.mobile-expand-area');
+                    toggleBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        expandDiv.classList.remove('open');
+                        toggleMobileExpand(wrapper, repoName);
+                    });
+                } else {
+                    // 电脑版：弹窗
+                    wrapper.innerHTML = `
+                        <div class="release-card">
+                            <div class="card-header"><div class="repo-name"><a href="${repoUrl}" target="_blank"><i class="fab fa-github"></i> ${escapeHtml(repoName)}</a><span class="badge-public"><i class="fas fa-bookmark"></i> 仓库</span></div><div class="repo-desc"><i class="far fa-file-alt"></i> ${escapeHtml(description) || '无描述'}</div><div class="stats"><span><i class="fas fa-star"></i> ${stargazers ?? 0}</span> <span><i class="fas fa-code-branch"></i> ${forks ?? 0}</span></div></div>
+                            <div class="release-body"><div class="version-badge"><span><i class="fas fa-rocket"></i> 最新发行版</span><span class="version-tag"><i class="fas fa-hashtag"></i> ${escapeHtml(releaseName)}</span>${release.prerelease ? '<span style="background:#f97316; padding:0.2rem 0.5rem; border-radius:20px;"><i class="fas fa-flask"></i> 预发布</span>' : ''}</div><div class="release-date"><i class="far fa-clock"></i> ${formatDate(publishedAt)}</div><div class="release-notes">${renderedNotes || '<em>无说明</em>'}</div></div>
+                            <div class="card-footer"><a href="${release.html_url}" target="_blank" class="btn-link btn-primary-sm"><i class="fab fa-github"></i> 查看 Release</a><button class="btn-link toggle-pc-btn"><i class="fas fa-external-link-alt"></i> 全部版本</button></div>
+                        </div>
+                    `;
+                    const pcBtn = wrapper.querySelector('.toggle-pc-btn');
+                    pcBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        showPcDetail(repoName);
                     });
                 }
                 cardsGrid.appendChild(wrapper);
             }
         }
 
-        // 缓存逻辑
+        // 缓存与数据拉取
         async function fetchReposWithCache(forceRefresh = false) {
             const now = Date.now();
             const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
@@ -638,7 +610,7 @@
         }
 
         async function fetchFreshDataAndCache() {
-            setStatus('loading', currentToken ? '使用Token获取数据...' : '未使用Token，获取仓库列表 (限额60次/小时)');
+            setStatus('loading', currentToken ? '使用Token获取数据...' : '未使用Token，获取仓库列表');
             try {
                 let allRepos = [];
                 let page = 1;
@@ -676,8 +648,22 @@
             }
         }
 
-        // 启动
+        updateTokenUI();
         fetchReposWithCache(false);
+        // 监听窗口变化重新渲染（设备横竖屏/改变尺寸时重新渲染以适配交互）
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                const cached = localStorage.getItem(CACHE_KEY_LATEST);
+                if (cached) {
+                    try {
+                        const data = JSON.parse(cached);
+                        if (data && data.length) renderCards(data);
+                    } catch(e) {}
+                }
+            }, 200);
+        });
     })();
 </script>
 </body>
