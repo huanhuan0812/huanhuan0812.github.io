@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>huanhuan0812 Release </title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- marked & DOMPurify -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(145deg, #f3f6fc 0%, #eef2f8 100%);
+            color: var(--text-color);
+            padding: 2rem 1.5rem;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --text-color: #1f2937;
+            --light-bg: #f9fafb;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --expand-bg: #fffbeb;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .avatar-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 0.5rem 1.8rem 0.5rem 1.2rem;
+            border-radius: 60px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 1rem;
+        }
+
+        .avatar-badge img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-color);
+            object-fit: cover;
+        }
+
+        .avatar-badge h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .sub {
+            color: #4b5563;
+            font-size: 0.9rem;
+            border-top: 1px solid #e2e8f0;
+            display: inline-block;
+            padding-top: 0.5rem;
+        }
+
+        /* Token 状态条 (更简洁) */
+        .token-status-bar {
+            background: white;
+            border-radius: 48px;
+            padding: 0.5rem 1.2rem;
+            margin: 0.5rem auto 1.2rem auto;
+            max-width: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: var(--card-shadow);
+        }
+        .token-badge {
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 0.25rem 0.8rem;
+            border-radius: 40px;
+        }
+        .btn-token-settings {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-size: 0.75rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0.25rem 0.8rem;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+        .btn-token-settings:hover {
+            background: #eef2ff;
+        }
+        .cache-badge {
+            background: #e6f7e6;
+            color: #2e7d32;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            margin-left: 8px;
+        }
+
+        /* 模态框 (Token 设置弹窗 + 帮助) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 1100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+        .token-modal {
+            background: white;
+            border-radius: 2rem;
+            width: 90%;
+            max-width: 460px;
+            box-shadow: 0 25px 40px rgba(0,0,0,0.25);
+            overflow: hidden;
+            animation: modalSlide 0.2s ease;
+        }
+        @keyframes modalSlide {
+            from { transform: scale(0.96); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-header {
+            padding: 1.2rem 1.5rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-color);
+        }
+        .close-modal-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: color 0.2s;
+        }
+        .close-modal-btn:hover { color: #dc2626; }
+        .modal-body {
+            padding: 1.5rem;
+        }
+        .input-group {
+            margin-bottom: 1.2rem;
+        }
+        .input-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+        .token-input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 60px;
+            border: 1px solid #e2e8f0;
+            padding: 0.2rem 0.8rem;
+        }
+        .token-input-wrapper i {
+            color: #64748b;
+        }
+        .token-input-wrapper input {
+            border: none;
+            background: transparent;
+            padding: 0.7rem 0.5rem;
+            width: 100%;
+            outline: none;
+            font-family: monospace;
+            font-size: 0.8rem;
+        }
+        .help-text {
+            font-size: 0.7rem;
+            color: #475569;
+            margin-top: 8px;
+            line-height: 1.4;
+        }
+        .help-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+        .btn-primary {
+            background: var(--primary-color);
+            border: none;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-secondary {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .status-area { text-align: center; margin: 1rem auto; }
+        .loader { display: inline-flex; align-items: center; gap: 10px; background: white; padding: 0.6rem 1.2rem; border-radius: 48px; box-shadow: var(--card-shadow); }
+        .spinner { width: 20px; height: 20px; border: 3px solid #e2e8f0; border-top-color: var(--primary-color); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-message { background: #fee2e2; color: #b91c1c; padding: 0.7rem 1.2rem; border-radius: 32px; display: inline-block; font-size: 0.85rem; }
+        
+        /* 卡片网格 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 1.8rem;
+            margin-top: 1rem;
+        }
+        .release-card-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+        .release-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--card-shadow);
+        }
+        .release-card:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15); }
+        .card-header { padding: 1.2rem 1.5rem 0.8rem; border-bottom: 1px solid #f0f2f5; }
+        .repo-name { font-size: 1.3rem; font-weight: 700; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 6px; }
+        .repo-name a { text-decoration: none; color: var(--text-color); display: flex; align-items: center; gap: 6px; }
+        .repo-name a:hover { color: var(--primary-color); }
+        .badge-public { background: #eef2ff; color: var(--primary-color); font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 20px; }
+        .repo-desc { font-size: 0.8rem; color: #4b5563; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .stats { font-size: 0.7rem; color: #5b6e8c; display: flex; gap: 12px; margin-top: 8px; }
+        .release-body { padding: 1rem 1.5rem 0.5rem; }
+        .version-badge { display: inline-flex; align-items: baseline; gap: 6px; background: #f1f5f9; padding: 0.2rem 0.8rem; border-radius: 40px; font-size: 0.75rem; font-weight: 600; margin-bottom: 10px; flex-wrap: wrap; }
+        .version-tag { font-family: monospace; background: var(--primary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.75rem; }
+        .release-date { font-size: 0.7rem; color: #5b6e8c; margin: 6px 0 10px; display: flex; align-items: center; gap: 5px; }
+        .release-notes { font-size: 0.8rem; background: var(--light-bg); padding: 0.6rem 0.8rem; border-radius: 14px; max-height: 160px; overflow-y: auto; border-left: 3px solid var(--primary-color); margin-bottom: 0.5rem; }
+        .card-footer { padding: 0.6rem 1.5rem 1rem; border-top: 1px solid #edf2f7; display: flex; justify-content: space-between; gap: 10px; }
+        .btn-link { background: white; border: 1px solid #cbd5e1; padding: 0.4rem 0.9rem; border-radius: 40px; font-size: 0.7rem; font-weight: 500; text-decoration: none; color: #1f2937; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: 0.2s; }
+        .btn-link:hover { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+        .btn-primary-sm { background: var(--primary-color); border-color: var(--primary-color); color: white; }
+        
+        /* 向下展开区域 - 美化和主页面贴合 */
+        .expand-area {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fefce8;
+            border-radius: 0 0 1.2rem 1.2rem;
+            margin-top: -0.3rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .expand-area.open {
+            max-height: 650px;
+            overflow-y: auto;
+        }
+        .versions-container {
+            padding: 1rem 1.2rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+        .version-item {
+            background: white;
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            border-left: 3px solid var(--primary-color);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            transition: 0.1s;
+        }
+        .version-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+        .version-tag-name { font-weight: 700; font-family: monospace; background: #e2e8f0; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.8rem; }
+        .version-date { font-size: 0.65rem; color: #5b6e8c; display: flex; align-items: center; gap: 4px; }
+        .version-downloads { margin: 6px 0 5px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+        .download-link { background: #f8fafc; border: 1px solid #cbd5e1; padding: 0.2rem 0.6rem; border-radius: 30px; font-size: 0.65rem; text-decoration: none; color: var(--primary-color); display: inline-flex; align-items: center; gap: 4px; transition: 0.1s; }
+        .download-link:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .version-notes-preview { font-size: 0.7rem; color: #334155; margin-top: 6px; background: #f9fafb; padding: 0.4rem 0.6rem; border-radius: 12px; max-height: 80px; overflow-y: auto; }
+        .expand-loading, .no-versions { text-align: center; padding: 1.2rem; color: #6b7280; font-size: 0.8rem; }
+        .expand-header { display: flex; justify-content: flex-end; padding: 0.4rem 1rem 0; }
+        .close-expand-btn { background: transparent; border: none; font-size: 0.65rem; color: #6b7280; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 20px; }
+        .close-expand-btn:hover { background: #e5e7eb; }
+        footer { text-align: center; margin-top: 2.5rem; font-size: 0.7rem; color: #6c757d; border-top: 1px solid #e2e8f0; padding-top: 1.5rem; }
+        @media (max-width: 640px) { body { padding: 1rem; } .cards-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="avatar-badge">
+            <img src="https://github.com/huanhuan0812.png" alt="avatar" onerror="this.src='https://ui-avatars.com/api/?name=huanhuan0812&background=2563eb&color=fff'">
+            <h1>huanhuan0812 <span id="cacheIndicator" class="cache-badge"><i class="fas fa-database"></i> 缓存就绪</span></h1>
+        </div>
+        <div class="sub"><i class="fas fa-tag"></i>点击「全部版本」向下展开</div>
+    </div>
+
+    <!-- Token 状态栏 + 设置按钮 -->
+    <div class="token-status-bar">
+        <div class="token-badge" id="tokenStatusBadge">
+            <i class="fas fa-circle"></i> 未使用Token
+        </div>
+        <button id="openTokenModalBtn" class="btn-token-settings">
+            <i class="fas fa-sliders-h"></i> Token 设置
+        </button>
+    </div>
+
+    <div id="statusContainer" class="status-area"></div>
+    <div id="cardsContainer" class="cards-grid"></div>
+    <footer><i class="fas fa-shield-alt"></i> Token提升速率限制至5000次/小时</footer>
+</div>
+
+<!-- Token 设置弹窗（含帮助说明） -->
+<div id="tokenModal" class="modal-overlay">
+    <div class="token-modal">
+        <div class="modal-header">
+            <h3><i class="fas fa-key"></i> GitHub Token 配置</h3>
+            <button class="close-modal-btn" id="closeTokenModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group">
+                <label><i class="fas fa-lock"></i> Personal Access Token</label>
+                <div class="token-input-wrapper">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="tokenInputDialog" placeholder="输入 token (classic)" autocomplete="off">
+                </div>
+                <div class="help-text">
+                    ⚡ 未认证限制 <strong>60次/小时</strong> · 使用Token后提升至 <strong>5000次/小时</strong><br>
+                    🔧 <a href="https://github.com/settings/tokens" target="_blank">获取Token</a> → 勾选 <code>public_repo</code> 权限
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="saveTokenDialogBtn" class="btn-primary"><i class="fas fa-save"></i> 保存并刷新</button>
+                <button id="clearTokenDialogBtn" class="btn-secondary"><i class="fas fa-trash-alt"></i> 清除Token</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const USERNAME = 'huanhuan0812';
+        const CACHE_KEY_LATEST = 'github_latest_release_data_v3';
+        const CACHE_TIMESTAMP_KEY = 'github_cache_timestamp_v3';
+        const TOKEN_STORAGE_KEY = 'github_token_for_releases';
+        const CACHE_TTL = 30 * 60 * 1000;
+
+        // DOM
+        const tokenStatusBadge = document.getElementById('tokenStatusBadge');
+        const openModalBtn = document.getElementById('openTokenModalBtn');
+        const tokenModal = document.getElementById('tokenModal');
+        const closeTokenModalBtn = document.getElementById('closeTokenModalBtn');
+        const tokenInputDialog = document.getElementById('tokenInputDialog');
+        const saveTokenDialogBtn = document.getElementById('saveTokenDialogBtn');
+        const clearTokenDialogBtn = document.getElementById('clearTokenDialogBtn');
+        const cacheIndicator = document.getElementById('cacheIndicator');
+        const statusDiv = document.getElementById('statusContainer');
+        const cardsGrid = document.getElementById('cardsContainer');
+
+        let currentToken = localStorage.getItem(TOKEN_STORAGE_KEY) || '';
+        updateTokenUI();
+
+        function updateTokenUI() {
+            if (currentToken) {
+                tokenStatusBadge.innerHTML = '<i class="fas fa-check-circle" style="color:#16a34a;"></i> Token 已启用 (5000次/小时)';
+                tokenStatusBadge.style.background = '#e0f2fe';
+                tokenInputDialog.value = '••••••••••••••••';
+            } else {
+                tokenStatusBadge.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#b45309;"></i> 未使用Token (60次/小时)';
+                tokenStatusBadge.style.background = '#fff3e0';
+                tokenInputDialog.value = '';
+            }
+        }
+
+        function openModal() { tokenModal.classList.add('active'); }
+        function closeModal() { tokenModal.classList.remove('active'); }
+
+        openModalBtn.addEventListener('click', openModal);
+        closeTokenModalBtn.addEventListener('click', closeModal);
+        tokenModal.addEventListener('click', (e) => { if (e.target === tokenModal) closeModal(); });
+
+        // 保存 token
+        async function saveToken() {
+            let raw = tokenInputDialog.value.trim();
+            if (raw === '••••••••••••••••' && currentToken) {
+                closeModal();
+                return;
+            }
+            if (raw) {
+                localStorage.setItem(TOKEN_STORAGE_KEY, raw);
+                currentToken = raw;
+                tokenInputDialog.value = '••••••••••••••••';
+                updateTokenUI();
+            } else {
+                localStorage.removeItem(TOKEN_STORAGE_KEY);
+                currentToken = '';
+                tokenInputDialog.value = '';
+                updateTokenUI();
+            }
+            // 清除缓存并重新拉取
+            localStorage.removeItem(CACHE_KEY_LATEST);
+            localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+            closeModal();
+            await fetchFreshDataAndCache();
+        }
+
+        async function clearToken() {
+            localStorage.removeItem(TOKEN_STORAGE_KEY);
+            currentToken = '';
+            tokenInputDialog.value = '';
+            updateTokenUI();
+            localStorage.removeItem(CACHE_KEY_LATEST);
+            localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+            closeModal();
+            await fetchFreshDataAndCache();
+        }
+
+        saveTokenDialogBtn.addEventListener('click', saveToken);
+        clearTokenDialogBtn.addEventListener('click', clearToken);
+
+        // fetch 封装
+        async function fetchJSON(url, options = {}) {
+            const headers = { 'Accept': 'application/vnd.github.v3+json', ...options.headers };
+            if (currentToken) headers['Authorization'] = `Bearer ${currentToken}`;
+            const res = await fetch(url, { ...options, headers });
+            if (!res.ok) {
+                let msg = `HTTP ${res.status}`;
+                if (res.status === 401) msg = `Token无效或权限不足`;
+                else if (res.status === 403) msg = `API 速率限制，请使用Token或稍后重试`;
+                throw new Error(msg);
+            }
+            return await res.json();
+        }
+
+        function setStatus(type, message) {
+            if (type === 'loading') statusDiv.innerHTML = `<div class="loader"><div class="spinner"></div><span>${message}</span></div>`;
+            else if (type === 'error') statusDiv.innerHTML = `<div class="error-message"><i class="fas fa-bug"></i> ${message}</div>`;
+            else if (type === 'info') statusDiv.innerHTML = `<div class="loader" style="background:transparent; box-shadow:none;"><span><i class="fas fa-info-circle"></i> ${message}</span></div>`;
+            else statusDiv.innerHTML = '';
+        }
+
+        function renderMarkdown(text) {
+            if (!text) return '<em><i class="far fa-file-alt"></i> 暂无说明</em>';
+            try {
+                const raw = marked.parse(text, { breaks: true, gfm: true });
+                return DOMPurify.sanitize(raw, { ALLOWED_TAGS: ['p','br','strong','em','ul','ol','li','code','pre','a','h1','h2','h3','h4','blockquote','img','span','div'], ALLOWED_ATTR: ['href','target','rel','src','alt','title','class'] });
+            } catch(e) { return escapeHtml(text); }
+        }
+        function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+        function formatDate(iso) { if (!iso) return '未知'; const d = new Date(iso); return d.toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString('zh-CN', { hour:'2-digit', minute:'2-digit' }); }
+
+        // 加载全部版本 (优雅样式)
+        async function fetchAndRenderVersions(repoName, expandContainer) {
+            expandContainer.innerHTML = `<div class="expand-loading"><i class="fas fa-spinner fa-pulse"></i> 加载 ${repoName} 全部版本...</div>`;
+            try {
+                const releases = await fetchJSON(`https://api.github.com/repos/${USERNAME}/${repoName}/releases?per_page=100`);
+                if (!releases || releases.length === 0) {
+                    expandContainer.innerHTML = `<div class="no-versions"><i class="fas fa-inbox"></i> 暂无任何 Release</div>`;
+                    return;
+                }
+                releases.sort((a,b) => new Date(b.published_at || b.created_at) - new Date(a.published_at || a.created_at));
+                let html = `<div class="versions-container">`;
+                for (const rel of releases) {
+                    const tag = rel.tag_name;
+                    const name = rel.name || tag;
+                    const date = rel.published_at || rel.created_at;
+                    const prereleaseBadge = rel.prerelease ? '<span style="background:#f97316; font-size:0.6rem; padding:0.1rem 0.5rem; border-radius:20px; color:white;"><i class="fas fa-flask"></i> 预发布</span>' : '';
+                    let assetsHtml = '';
+                    if (rel.assets && rel.assets.length) {
+                        assetsHtml = `<div><strong><i class="fas fa-paperclip"></i> 附件:</strong><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:5px;">`;
+                        rel.assets.forEach(asset => {
+                            assetsHtml += `<a href="${asset.browser_download_url}" target="_blank" class="download-link"><i class="fas fa-download"></i> ${escapeHtml(asset.name)} (${(asset.size/1024).toFixed(1)} KB)</a>`;
+                        });
+                        assetsHtml += `</div></div>`;
+                    } else { assetsHtml = `<div><a href="${rel.html_url}" target="_blank" class="download-link"><i class="fab fa-github"></i> Release 页</a></div>`; }
+                    const zipUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.zip`;
+                    const tarUrl = `https://github.com/${USERNAME}/${repoName}/archive/refs/tags/${encodeURIComponent(tag)}.tar.gz`;
+                    const sourceLinks = `<div style="display:flex; gap:6px; margin-top:4px;"><a href="${zipUrl}" class="download-link" target="_blank"><i class="fas fa-file-archive"></i> ZIP源码</a><a href="${tarUrl}" class="download-link" target="_blank"><i class="fas fa-compress"></i> TAR.GZ</a></div>`;
+                    const shortBody = rel.body ? renderMarkdown(rel.body.substring(0, 320) + (rel.body.length > 320 ? '…' : '')) : '<em>无说明</em>';
+                    html += `<div class="version-item">
+                        <div class="version-title"><span class="version-tag-name"><i class="fas fa-tag"></i> ${escapeHtml(name)}</span> ${prereleaseBadge}<span class="version-date"><i class="far fa-calendar-alt"></i> ${formatDate(date)}</span></div>
+                        <div class="version-downloads">${assetsHtml}</div>${sourceLinks}
+                        <div class="version-notes-preview"><strong><i class="fas fa-align-left"></i> 说明：</strong><div style="margin-top:4px;">${shortBody}</div></div>
+                    </div>`;
+                }
+                html += `</div>`;
+                expandContainer.innerHTML = html;
+            } catch (err) {
+                expandContainer.innerHTML = `<div class="error-message" style="font-size:0.7rem; margin:0.5rem;"><i class="fas fa-exclamation-circle"></i> ${err.message}</div>`;
+            }
+        }
+
+        // 切换展开区域
+        function toggleExpand(wrapper, repoName) {
+            const expandDiv = wrapper.querySelector('.expand-area');
+            const isOpen = expandDiv.classList.contains('open');
+            if (!isOpen) {
+                expandDiv.classList.add('open');
+                if (!expandDiv.hasAttribute('data-loaded')) {
+                    expandDiv.setAttribute('data-loaded', 'false');
+                    fetchAndRenderVersions(repoName, expandDiv).then(() => {
+                        expandDiv.setAttribute('data-loaded', 'true');
+                    });
+                }
+            } else {
+                expandDiv.classList.remove('open');
+            }
+        }
+
+        // 渲染卡片
+        function renderCards(reposData) {
+            cardsGrid.innerHTML = '';
+            for (const item of reposData) {
+                const { repoName, repoUrl, description, stargazers, forks, latestRelease } = item;
+                const release = latestRelease;
+                const releaseName = release.name || release.tag_name;
+                const publishedAt = release.published_at || release.created_at;
+                const renderedNotes = renderMarkdown(release.body || '');
+                const wrapper = document.createElement('div');
+                wrapper.className = 'release-card-wrapper';
+                wrapper.innerHTML = `
+                    <div class="release-card">
+                        <div class="card-header">
+                            <div class="repo-name"><a href="${repoUrl}" target="_blank"><i class="fab fa-github"></i> ${escapeHtml(repoName)}</a><span class="badge-public"><i class="fas fa-bookmark"></i> 仓库</span></div>
+                            <div class="repo-desc"><i class="far fa-file-alt"></i> ${escapeHtml(description) || '无项目描述'}</div>
+                            <div class="stats"><span><i class="fas fa-star"></i> ${stargazers ?? 0}</span> <span><i class="fas fa-code-branch"></i> ${forks ?? 0}</span></div>
+                        </div>
+                        <div class="release-body">
+                            <div class="version-badge"><span><i class="fas fa-rocket"></i> 最新发行版</span><span class="version-tag"><i class="fas fa-hashtag"></i> ${escapeHtml(releaseName)}</span>${release.prerelease ? '<span style="background:#f97316; padding:0.2rem 0.5rem; border-radius:20px; font-size:0.7rem;"><i class="fas fa-flask"></i> 预发布</span>' : ''}</div>
+                            <div class="release-date"><i class="far fa-clock"></i> ${formatDate(publishedAt)}</div>
+                            <div class="release-notes">${renderedNotes || '<em><i class="far fa-comment-dots"></i> 无发布说明</em>'}</div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="${release.html_url}" target="_blank" class="btn-link btn-primary-sm"><i class="fab fa-github"></i> 查看 Release</a>
+                            <button class="btn-link toggle-versions-btn"><i class="fas fa-chevron-circle-down"></i> 全部版本</button>
+                        </div>
+                    </div>
+                    <div class="expand-area">
+                        <div class="expand-header"><button class="close-expand-btn"><i class="fas fa-times-circle"></i> 收起</button></div>
+                    </div>
+                `;
+                const toggleBtn = wrapper.querySelector('.toggle-versions-btn');
+                const closeBtn = wrapper.querySelector('.close-expand-btn');
+                const expandDiv = wrapper.querySelector('.expand-area');
+                toggleBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleExpand(wrapper, repoName);
+                });
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        expandDiv.classList.remove('open');
+                    });
+                }
+                cardsGrid.appendChild(wrapper);
+            }
+        }
+
+        // 缓存逻辑
+        async function fetchReposWithCache(forceRefresh = false) {
+            const now = Date.now();
+            const cachedTimestamp = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+            const isValid = cachedTimestamp && (now - parseInt(cachedTimestamp) < CACHE_TTL);
+            if (!forceRefresh && isValid) {
+                const cached = localStorage.getItem(CACHE_KEY_LATEST);
+                if (cached) {
+                    try {
+                        const data = JSON.parse(cached);
+                        if (data && data.length) {
+                            cacheIndicator.innerHTML = '<i class="fas fa-database"></i> 缓存 (30分钟)';
+                            setStatus('info', `使用缓存 · ${data.length} 个仓库`);
+                            renderCards(data);
+                            return;
+                        }
+                    } catch(e) {}
+                }
+            }
+            await fetchFreshDataAndCache();
+        }
+
+        async function fetchFreshDataAndCache() {
+            setStatus('loading', currentToken ? '使用Token获取数据...' : '未使用Token，获取仓库列表 (限额60次/小时)');
+            try {
+                let allRepos = [];
+                let page = 1;
+                while (true) {
+                    const reposPage = await fetchJSON(`https://api.github.com/users/${USERNAME}/repos?per_page=100&page=${page}&sort=updated`);
+                    if (!reposPage.length) break;
+                    allRepos = allRepos.concat(reposPage);
+                    page++;
+                    if (page > 10) break;
+                }
+                if (!allRepos.length) { setStatus('info', '无公开仓库'); cardsGrid.innerHTML = '<div class="no-repo"><i class="fas fa-folder-open"></i> 暂无仓库</div>'; return; }
+                setStatus('loading', `获取最新release (共${allRepos.length}个仓库)...`);
+                const promises = allRepos.map(async (repo) => {
+                    try {
+                        const releases = await fetchJSON(`https://api.github.com/repos/${USERNAME}/${repo.name}/releases?per_page=1`);
+                        if (releases && releases.length) {
+                            return { repoName: repo.name, repoFullName: repo.full_name, repoUrl: repo.html_url, description: repo.description || '', stargazers: repo.stargazers_count, forks: repo.forks_count, latestRelease: releases[0] };
+                        }
+                        return null;
+                    } catch(e) { return null; }
+                });
+                const results = await Promise.all(promises);
+                const valid = results.filter(r => r !== null);
+                if (!valid.length) { setStatus('info', '无Release仓库'); cardsGrid.innerHTML = '<div class="no-repo"><i class="fas fa-tag"></i> 暂无包含Release的仓库</div>'; return; }
+                valid.sort((a,b) => new Date(b.latestRelease.published_at || b.latestRelease.created_at) - new Date(a.latestRelease.published_at || a.latestRelease.created_at));
+                localStorage.setItem(CACHE_KEY_LATEST, JSON.stringify(valid));
+                localStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+                cacheIndicator.innerHTML = '<i class="fas fa-check-circle"></i> 已缓存';
+                setStatus('info', `✨ 获取 ${valid.length} 个有Release的仓库`);
+                renderCards(valid);
+            } catch(err) {
+                setStatus('error', err.message);
+                cardsGrid.innerHTML = `<div class="no-repo"><i class="fas fa-skull-crosswalk"></i> 错误: ${err.message}<br><button id="retryBtn" class="btn-link" style="margin-top:10px;">重试</button></div>`;
+                document.getElementById('retryBtn')?.addEventListener('click', () => fetchFreshDataAndCache());
+            }
+        }
+
+        // 启动
+        fetchReposWithCache(false);
+    })();
+</script>
+</body>
+</html>
