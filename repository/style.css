@@ -166,8 +166,8 @@ h1, h2, h3 {
 
 .back-button {
   position: absolute;
-  top: 10px;      /* 距离顶部20像素 */
-  left: 10px;     /* 距离左侧20像素 */
+  top: 10px;      /* 距离顶部10像素 */
+  left: 10px;     /* 距离左侧10像素 */
   padding: 10px 20px;
   background-color: #0366d6;
   color: white;
@@ -178,5 +178,22 @@ h1, h2, h3 {
 
 /* 悬停状态 */
 .back-button:hover {
+  background-color: #035fc7;
+}
+
+.releases-button {
+  position: absolute;
+  top: 10px;      /* 距离顶部10像素 */
+  right: 10px;     /* 距离左侧10像素 */
+  padding: 10px 20px;
+  background-color: #0366d6;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* 悬停状态 */
+.releases-button:hover {
   background-color: #035fc7;
 }
