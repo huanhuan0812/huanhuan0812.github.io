@@ -7,7 +7,6 @@
   <style>
     /* ========== CSS 变量 - 主题系统 ========== */
     :root {
-      /* 暗色主题（默认） */
       --bg-primary: #0f0f1a;
       --bg-secondary: #1a1a2e;
       --bg-card: rgba(255, 255, 255, 0.05);
@@ -32,14 +31,13 @@
       
       --error-bg: rgba(255, 107, 107, 0.1);
       --error-text: #ff6b6b;
+      --success-bg: rgba(76, 175, 80, 0.1);
+      --success-text: #4caf50;
       
       --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
       --backdrop-blur: blur(30px);
-      
-      --transition-speed: 0.3s;
     }
     
-    /* 亮色主题 */
     [data-theme="light"] {
       --bg-primary: #f5f5f5;
       --bg-secondary: #e8e8e8;
@@ -58,24 +56,11 @@
       --border-hover: rgba(0, 0, 0, 0.15);
       --border-upload: rgba(0, 0, 0, 0.12);
       
-      --accent-start: #667eea;
-      --accent-end: #764ba2;
-      --accent-shadow: rgba(102, 126, 234, 0.2);
-      --accent-hover-shadow: rgba(118, 75, 162, 0.3);
-      
-      --error-bg: rgba(255, 107, 107, 0.08);
-      --error-text: #e74c3c;
-      
       --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
       --backdrop-blur: blur(20px);
     }
     
-    /* ========== 全局样式 ========== */
-    * { 
-      margin: 0; 
-      padding: 0; 
-      box-sizing: border-box; 
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     
     body {
       background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, #16213e 100%);
@@ -86,7 +71,7 @@
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       padding: 1rem;
       margin: 0;
-      transition: background var(--transition-speed) ease;
+      transition: background 0.3s ease;
     }
     
     .container {
@@ -100,11 +85,10 @@
       max-width: 650px;
       width: 100%;
       color: var(--text-secondary);
-      transition: all var(--transition-speed) ease;
+      transition: all 0.3s ease;
       position: relative;
     }
     
-    /* ========== 主题切换按钮 ========== */
     .theme-toggle {
       position: absolute;
       top: 1.5rem;
@@ -117,7 +101,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      transition: all var(--transition-speed) ease;
+      transition: all 0.3s ease;
       z-index: 10;
     }
     
@@ -141,7 +125,6 @@
       font-weight: 500;
     }
     
-    /* ========== 标题 ========== */
     h1 {
       font-size: 2rem;
       margin-bottom: 0.3rem;
@@ -149,7 +132,7 @@
       align-items: center;
       gap: 0.5rem;
       color: var(--text-primary);
-      padding-right: 5rem; /* 为主题按钮留空间 */
+      padding-right: 5rem;
     }
     
     h1 span {
@@ -167,7 +150,41 @@
       padding-left: 0.8rem;
     }
     
-    /* ========== 上传区域 ========== */
+    /* 缓存状态指示器 */
+    .cache-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg-upload);
+      border-radius: 2rem;
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+    }
+    
+    .cache-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+    
+    .cache-indicator.cached {
+      background: var(--success-text);
+      box-shadow: 0 0 8px var(--success-text);
+    }
+    
+    .cache-indicator.loading {
+      background: #ffa500;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    
     .upload-area {
       background: var(--bg-upload);
       border: 2px dashed var(--border-upload);
@@ -175,7 +192,7 @@
       padding: 2rem 1.5rem;
       text-align: center;
       cursor: pointer;
-      transition: all var(--transition-speed) ease;
+      transition: all 0.3s ease;
       margin-bottom: 1.5rem;
       position: relative;
     }
@@ -224,7 +241,7 @@
     .file-icon { 
       font-size: 3rem;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
-      transition: transform var(--transition-speed) ease;
+      transition: transform 0.3s ease;
     }
     
     .upload-area:hover .file-icon {
@@ -237,7 +254,6 @@
       word-break: break-all;
       color: var(--text-secondary);
       max-width: 100%;
-      transition: color var(--transition-speed) ease;
     }
     
     .file-size {
@@ -246,12 +262,8 @@
       margin-top: 0.2rem;
     }
     
-    .file-hint { 
-      font-size: 0.8rem; 
-      color: var(--text-muted); 
-    }
+    .file-hint { font-size: 0.8rem; color: var(--text-muted); }
     
-    /* ========== 格式选择 ========== */
     .format-selector {
       background: var(--bg-upload);
       border-radius: 1.2rem;
@@ -284,14 +296,13 @@
       background-position: right 0.7rem center;
       background-size: 1rem;
       outline: none;
-      transition: all var(--transition-speed) ease;
+      transition: all 0.3s ease;
     }
     
     select:hover {
       border-color: var(--accent-end);
     }
     
-    /* ========== 按钮 ========== */
     .btn {
       background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
       border: none;
@@ -302,7 +313,7 @@
       font-size: 1rem;
       cursor: pointer;
       width: 100%;
-      transition: all var(--transition-speed) ease;
+      transition: all 0.3s ease;
       box-shadow: 0 8px 20px var(--accent-shadow);
       letter-spacing: 0.5px;
     }
@@ -322,7 +333,6 @@
       transform: none;
     }
     
-    /* ========== 进度条 ========== */
     .progress-container {
       margin: 1.2rem 0 0.5rem;
       background: var(--bg-progress);
@@ -341,16 +351,14 @@
       box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
     }
     
-    /* ========== 状态文字 ========== */
     .status-text {
       font-size: 0.85rem;
       color: var(--text-tertiary);
       margin-top: 0.5rem;
       min-height: 1.2rem;
-      transition: color var(--transition-speed) ease;
+      transition: color 0.3s ease;
     }
     
-    /* ========== 下载区域 ========== */
     .download-link {
       display: none;
       margin-top: 1rem;
@@ -380,7 +388,6 @@
       text-decoration: underline;
     }
     
-    /* ========== 错误提示 ========== */
     .error-message {
       color: var(--error-text);
       background: var(--error-bg);
@@ -392,7 +399,6 @@
       border: 1px solid var(--error-text);
     }
     
-    /* ========== 页脚 ========== */
     .footer-note {
       text-align: center;
       margin-top: 1.5rem;
@@ -405,7 +411,6 @@
       text-decoration: none;
     }
     
-    /* ========== 响应式 ========== */
     @media (max-width: 600px) {
       .container {
         padding: 1.5rem;
@@ -445,6 +450,13 @@
       <span>🎬 视频音频提取器</span>
     </h1>
     <div class="subtitle">纯浏览器端处理 · 无需上传 · 隐私安全</div>
+
+    <!-- 缓存状态 -->
+    <div class="cache-status" id="cacheStatus">
+      <span class="cache-indicator" id="cacheIndicator"></span>
+      <span id="cacheText">检查缓存状态...</span>
+      <button id="clearCacheBtn" style="display:none; margin-left:auto; background:none; border:1px solid var(--border-color); color:var(--text-tertiary); padding:0.2rem 0.8rem; border-radius:1rem; cursor:pointer; font-size:0.7rem;">清除缓存</button>
+    </div>
 
     <!-- 上传区域 -->
     <div class="upload-area" id="uploadArea">
@@ -490,7 +502,7 @@
     
     <div class="footer-note">
       💡 基于 <a href="https://github.com/ffmpegwasm/ffmpeg.wasm" target="_blank">FFmpeg.wasm</a> · 
-      首次加载约31MB · 大文件处理较慢请耐心等待
+      <span id="cacheInfo">首次加载约31MB，之后从缓存读取</span>
     </div>
   </div>
 
@@ -512,6 +524,120 @@
       const downloadArea = document.getElementById('downloadArea');
       const downloadLink = document.getElementById('downloadLink');
       const errorMessageDiv = document.getElementById('errorMessage');
+      const cacheIndicator = document.getElementById('cacheIndicator');
+      const cacheText = document.getElementById('cacheText');
+      const clearCacheBtn = document.getElementById('clearCacheBtn');
+      const cacheInfo = document.getElementById('cacheInfo');
+
+      // ========== 缓存管理 ==========
+      const CACHE_NAME = 'ffmpeg-cache-v2';
+      const CORE_URL = 'https://unpkg.com/@ffmpeg/core@0.9.0/dist/ffmpeg-core.js';
+      const FFMPEG_JS_URL = 'https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js';
+      
+      // IndexedDB 数据库
+      let db = null;
+      
+      function openDatabase() {
+        return new Promise((resolve, reject) => {
+          const request = indexedDB.open('FFmpegCache', 1);
+          
+          request.onupgradeneeded = (event) => {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('files')) {
+              db.createObjectStore('files');
+            }
+          };
+          
+          request.onsuccess = (event) => {
+            db = event.target.result;
+            resolve(db);
+          };
+          
+          request.onerror = (event) => {
+            console.error('IndexedDB 打开失败:', event.target.error);
+            reject(event.target.error);
+          };
+        });
+      }
+      
+      async function getCachedFile(key) {
+        if (!db) return null;
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction(['files'], 'readonly');
+          const store = transaction.objectStore('files');
+          const request = store.get(key);
+          
+          request.onsuccess = () => {
+            resolve(request.result);
+          };
+          
+          request.onerror = () => {
+            reject(request.error);
+          };
+        });
+      }
+      
+      async function setCachedFile(key, data) {
+        if (!db) return;
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction(['files'], 'readwrite');
+          const store = transaction.objectStore('files');
+          const request = store.put(data, key);
+          
+          request.onsuccess = () => {
+            resolve();
+          };
+          
+          request.onerror = () => {
+            reject(request.error);
+          };
+        });
+      }
+      
+      async function clearCache() {
+        if (!db) return;
+        
+        return new Promise((resolve, reject) => {
+          const transaction = db.transaction(['files'], 'readwrite');
+          const store = transaction.objectStore('files');
+          const request = store.clear();
+          
+          request.onsuccess = () => {
+            console.log('缓存已清除');
+            updateCacheStatus(false);
+            clearCacheBtn.style.display = 'none';
+            cacheInfo.textContent = '首次加载约31MB，之后从缓存读取';
+            resolve();
+          };
+          
+          request.onerror = () => {
+            reject(request.error);
+          };
+        });
+      }
+      
+      async function updateCacheStatus(isCached) {
+        if (isCached) {
+          cacheIndicator.className = 'cache-indicator cached';
+          cacheText.textContent = '✅ 引擎已缓存，加载中...';
+          clearCacheBtn.style.display = 'inline-block';
+          cacheInfo.textContent = '从缓存加载，无需重新下载';
+        } else {
+          cacheIndicator.className = 'cache-indicator loading';
+          cacheText.textContent = '⏳ 正在下载引擎文件...';
+          clearCacheBtn.style.display = 'none';
+          cacheInfo.textContent = '首次加载约31MB，之后从缓存读取';
+        }
+      }
+      
+      clearCacheBtn.addEventListener('click', async () => {
+        if (confirm('确定要清除缓存的 FFmpeg 引擎文件吗？下次加载将重新下载约31MB。')) {
+          await clearCache();
+          setStatus('缓存已清除，刷新页面将重新下载引擎');
+        }
+      });
 
       // ========== 状态管理 ==========
       let selectedFile = null;
@@ -520,13 +646,11 @@
       let isProcessing = false;
       let outputBaseName = 'audio';
       
-      // 支持的文件类型
       const SUPPORTED_TYPES = {
         extensions: /\.(mp4|mkv|avi|mov|webm|flv|wmv|m4v|3gp|ogv|ts|mts|m2ts|vob|mpg|mpeg)$/i,
         mimeTypes: ['video/']
       };
       
-      // 最大文件大小（2GB）
       const MAX_FILE_SIZE = 2 * 1024 * 1024 * 1024;
 
       // ========== 主题管理 ==========
@@ -585,44 +709,165 @@
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
       }
 
-      // ========== FFmpeg 初始化 ==========
+      // ========== 下载并缓存文件 ==========
+      async function downloadAndCache(url, cacheKey) {
+        // 检查缓存
+        const cached = await getCachedFile(cacheKey);
+        if (cached) {
+          console.log(`✅ 从缓存加载: ${cacheKey}`);
+          return cached.data;
+        }
+        
+        // 下载文件
+        console.log(`📥 下载文件: ${url}`);
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`下载失败: ${response.status} ${response.statusText}`);
+        }
+        
+        // 获取总大小
+        const contentLength = response.headers.get('content-length');
+        const total = contentLength ? parseInt(contentLength) : 0;
+        
+        // 如果支持流式读取，显示进度
+        let data;
+        if (response.body && total > 0) {
+          const reader = response.body.getReader();
+          const chunks = [];
+          let received = 0;
+          
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            chunks.push(value);
+            received += value.length;
+            
+            // 更新下载进度
+            const percent = Math.round((received / total) * 100);
+            progressBar.style.width = `${Math.min(percent, 95)}%`;
+            setStatus(`📥 下载引擎文件... ${percent}% (${formatFileSize(received)}/${formatFileSize(total)})`);
+          }
+          
+          // 合并数据
+          const blob = new Blob(chunks);
+          data = new Uint8Array(await blob.arrayBuffer());
+        } else {
+          // 不支持流式，直接获取
+          data = new Uint8Array(await response.arrayBuffer());
+        }
+        
+        // 缓存数据
+        await setCachedFile(cacheKey, {
+          data: data,
+          url: url,
+          timestamp: Date.now(),
+          size: data.length
+        });
+        
+        console.log(`✅ 已缓存: ${cacheKey} (${formatFileSize(data.length)})`);
+        return data;
+      }
+
+      // ========== FFmpeg 初始化（带缓存）==========
       async function initFFmpeg() {
         if (ffmpegReady) return;
         
-        setStatus('⏳ 正在加载 FFmpeg 引擎（约31MB）...');
-        progressContainer.style.display = 'block';
-        progressBar.style.width = '10%';
-        
         try {
+          // 打开数据库
+          await openDatabase();
+          
+          // 检查缓存状态
+          const coreCached = await getCachedFile(CORE_URL);
+          const ffmpegCached = await getCachedFile(FFMPEG_JS_URL);
+          
+          if (coreCached) {
+            console.log(`💾 发现缓存: ffmpeg-core.js (${formatFileSize(coreCached.size)})`);
+          }
+          
+          await updateCacheStatus(!!coreCached);
+          
+          setStatus('⏳ 正在初始化 FFmpeg 引擎...');
+          progressContainer.style.display = 'block';
+          progressBar.style.width = coreCached ? '30%' : '5%';
+          
           const { createFFmpeg } = FFmpeg;
           
           ffmpeg = createFFmpeg({
             log: false,
-            corePath: 'https://unpkg.com/@ffmpeg/core@0.9.0/dist/ffmpeg-core.js',
+            // 使用自定义 corePath，通过 Blob URL 加载缓存的文件
+            corePath: CORE_URL,
           });
           
-          // 模拟加载进度
-          let loadProgress = 10;
-          const progressInterval = setInterval(() => {
-            if (loadProgress < 90) {
-              loadProgress += Math.random() * 10;
-              progressBar.style.width = `${Math.min(loadProgress, 90)}%`;
+          // 拦截 core 文件的加载，使用缓存
+          const originalFetch = window.fetch;
+          window.fetch = async function(input, init) {
+            const url = typeof input === 'string' ? input : input.url;
+            
+            // 拦截 ffmpeg-core.js 的请求
+            if (url.includes('ffmpeg-core.js') || url.includes('ffmpeg-core')) {
+              try {
+                const cachedData = await downloadAndCache(CORE_URL, CORE_URL);
+                // 创建 Blob URL
+                const blob = new Blob([cachedData], { type: 'application/javascript' });
+                const blobUrl = URL.createObjectURL(blob);
+                
+                // 恢复原始 fetch
+                window.fetch = originalFetch;
+                
+                return {
+                  ok: true,
+                  status: 200,
+                  url: blobUrl,
+                  text: async () => {
+                    const decoder = new TextDecoder();
+                    return decoder.decode(cachedData);
+                  },
+                  arrayBuffer: async () => cachedData.buffer,
+                  blob: async () => blob,
+                };
+              } catch (error) {
+                console.error('缓存加载失败，回退到网络:', error);
+                // 恢复原始 fetch 并重试
+                window.fetch = originalFetch;
+                return originalFetch(input, init);
+              }
             }
-          }, 500);
+            
+            return originalFetch(input, init);
+          };
           
+          progressBar.style.width = coreCached ? '50%' : '20%';
+          
+          if (coreCached) {
+            setStatus('⚡ 从缓存加载引擎...');
+          } else {
+            setStatus('📥 正在下载引擎文件（约31MB）...');
+          }
+          
+          // 加载 FFmpeg
+          const startTime = Date.now();
           await ffmpeg.load();
+          const loadTime = ((Date.now() - startTime) / 1000).toFixed(1);
           
-          clearInterval(progressInterval);
+          // 恢复原始 fetch
+          window.fetch = originalFetch;
           
           ffmpegReady = true;
           progressBar.style.width = '100%';
-          setStatus('✅ 引擎就绪，请选择视频文件');
+          
+          if (coreCached) {
+            setStatus(`✅ 引擎就绪（缓存加载，耗时 ${loadTime}秒）`);
+          } else {
+            setStatus(`✅ 引擎就绪（首次下载，耗时 ${loadTime}秒）`);
+          }
+          
+          await updateCacheStatus(true);
           
           setTimeout(() => {
             progressContainer.style.display = 'none';
-          }, 1000);
+          }, 1500);
           
-          // 如果已经选了文件，启用按钮
           if (selectedFile) {
             extractBtn.disabled = false;
           }
@@ -632,6 +877,9 @@
           setStatus('❌ 引擎加载失败，请刷新页面', true);
           progressContainer.style.display = 'none';
           showError('引擎加载失败: ' + error.message + '。请检查网络连接后刷新页面。');
+          
+          // 恢复原始 fetch
+          window.fetch = originalFetch;
         }
       }
 
@@ -640,12 +888,10 @@
 
       // ========== 文件验证和上传处理 ==========
       function validateFile(file) {
-        // 检查文件是否存在
         if (!file) {
           return { valid: false, error: '未选择文件' };
         }
         
-        // 检查文件大小
         if (file.size === 0) {
           return { valid: false, error: '文件大小为0，可能文件损坏' };
         }
@@ -654,7 +900,6 @@
           return { valid: false, error: `文件过大（最大支持2GB），当前文件: ${formatFileSize(file.size)}` };
         }
         
-        // 检查文件类型
         const isMimeValid = SUPPORTED_TYPES.mimeTypes.some(type => file.type.startsWith(type));
         const isExtensionValid = SUPPORTED_TYPES.extensions.test(file.name);
         
@@ -669,12 +914,10 @@
       }
       
       function handleFile(file) {
-        // 重置状态
         hideError();
         downloadArea.style.display = 'none';
         uploadArea.classList.remove('has-file', 'error');
         
-        // 验证文件
         const validation = validateFile(file);
         
         if (!validation.valid) {
@@ -686,22 +929,18 @@
           return;
         }
         
-        // 保存文件
         selectedFile = file;
         
-        // 更新UI
         fileNameDisplay.textContent = '📁 ' + file.name;
         fileSizeDisplay.textContent = '文件大小: ' + formatFileSize(file.size);
         uploadArea.classList.add('has-file');
         
-        // 生成输出文件名
         const dotIndex = file.name.lastIndexOf('.');
         outputBaseName = dotIndex > 0 
           ? file.name.substring(0, dotIndex).replace(/[^a-zA-Z0-9\u4e00-\u9fff\s\-_]/g, '').trim() 
           : 'audio';
         if (!outputBaseName) outputBaseName = 'audio';
         
-        // 大文件提示
         if (file.size > 500 * 1024 * 1024) {
           setStatus('⚠️ 文件较大（>500MB），处理可能需要较长时间');
         } else if (file.size > 100 * 1024 * 1024) {
@@ -710,29 +949,18 @@
           setStatus('✅ 文件已选择，点击按钮开始提取');
         }
         
-        // 启用按钮
         extractBtn.disabled = !ffmpegReady;
         
         if (!ffmpegReady) {
           setStatus('⏳ 等待引擎加载完成...');
         }
-        
-        console.log('✅ 文件验证通过:', {
-          name: file.name,
-          size: formatFileSize(file.size),
-          type: file.type,
-          outputName: outputBaseName
-        });
       }
 
       // ========== 事件监听 ==========
       videoInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        console.log('📂 文件选择事件触发');
-        handleFile(file);
+        handleFile(e.target.files[0]);
       });
 
-      // 拖拽支持
       uploadArea.addEventListener('dragover', (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -757,22 +985,15 @@
         uploadArea.classList.remove('dragover');
         
         const files = e.dataTransfer.files;
-        console.log('📂 拖拽文件事件触发，文件数量:', files.length);
-        
         if (files.length > 0) {
-          // 更新input元素（用于表单兼容）
           const dt = new DataTransfer();
           dt.items.add(files[0]);
           videoInput.files = dt.files;
-          
-          // 处理文件
           handleFile(files[0]);
         }
       });
 
-      // 点击上传区域
       uploadArea.addEventListener('click', (e) => {
-        // 防止点击内部元素时重复触发
         if (e.target === uploadArea || e.target.closest('.file-label')) {
           videoInput.click();
         }
@@ -780,7 +1001,6 @@
 
       // ========== 音频提取 ==========
       extractBtn.addEventListener('click', async () => {
-        // 验证状态
         if (!selectedFile) {
           showError('请先选择视频文件');
           return;
@@ -796,14 +1016,12 @@
           return;
         }
         
-        // 再次验证文件（防止文件被修改）
         const validation = validateFile(selectedFile);
         if (!validation.valid) {
           showError(validation.error);
           return;
         }
 
-        // 开始处理
         isProcessing = true;
         hideError();
         downloadArea.style.display = 'none';
@@ -815,20 +1033,13 @@
         
         try {
           setStatus('📥 正在读取视频文件...');
-          console.log('🎬 开始提取音频:', {
-            file: selectedFile.name,
-            size: formatFileSize(selectedFile.size),
-            format: format
-          });
           
-          // 写入输入文件
           const { fetchFile } = FFmpeg;
           const fileData = await fetchFile(selectedFile);
           ffmpeg.FS('writeFile', 'input.mp4', fileData);
           
           progressBar.style.width = '20%';
           
-          // 配置输出参数
           const formatConfig = {
             mp3: { ext: 'mp3', args: ['-acodec', 'libmp3lame', '-q:a', '2'] },
             aac: { ext: 'm4a', args: ['-acodec', 'aac', '-b:a', '192k'] },
@@ -843,7 +1054,6 @@
           setStatus('🎬 正在提取音频...');
           progressBar.style.width = '40%';
           
-          // 执行转换
           const startTime = Date.now();
           await ffmpeg.run('-i', 'input.mp4', '-vn', ...config.args, outputFile);
           const duration = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -851,15 +1061,12 @@
           progressBar.style.width = '80%';
           setStatus(`📦 准备下载... (耗时 ${duration}秒)`);
           
-          // 读取输出文件
           const data = ffmpeg.FS('readFile', outputFile);
           
-          // 验证输出
           if (!data || data.length === 0) {
             throw new Error('提取的音频文件为空');
           }
           
-          // 创建下载
           const mimeTypes = {
             mp3: 'audio/mpeg',
             m4a: 'audio/mp4',
@@ -872,7 +1079,6 @@
             type: mimeTypes[config.ext] || 'application/octet-stream' 
           });
           
-          // 清理旧URL
           if (downloadLink.href?.startsWith('blob:')) {
             URL.revokeObjectURL(downloadLink.href);
           }
@@ -888,27 +1094,17 @@
           setStatus(`✅ 提取完成！音频大小: ${formatFileSize(blob.size)}`);
           progressBar.style.width = '100%';
           
-          console.log('✅ 音频提取成功:', {
-            outputFile: outputFileName,
-            size: formatFileSize(blob.size),
-            duration: duration + 's'
-          });
-          
-          // 清理虚拟文件
           try {
             ffmpeg.FS('unlink', 'input.mp4');
             ffmpeg.FS('unlink', outputFile);
-          } catch(e) {
-            console.warn('清理文件失败:', e);
-          }
+          } catch(e) {}
           
         } catch (err) {
-          console.error('❌ 提取失败:', err);
-          showError('提取失败: ' + (err.message || '未知错误。可能视频编码不兼容，请尝试转换为其他格式。'));
+          console.error('提取失败:', err);
+          showError('提取失败: ' + (err.message || '未知错误'));
           setStatus('❌ 处理出错，请重试', true);
           progressBar.style.width = '0%';
           
-          // 清理
           try {
             ffmpeg.FS('unlink', 'input.mp4');
           } catch(e) {}
@@ -929,20 +1125,19 @@
       
       // 键盘快捷键
       document.addEventListener('keydown', (e) => {
-        // Ctrl+O 打开文件选择
         if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
           e.preventDefault();
           videoInput.click();
         }
-        // Ctrl+T 切换主题
         if ((e.ctrlKey || e.metaKey) && e.key === 't') {
           e.preventDefault();
           toggleTheme();
         }
       });
       
-      console.log('🚀 视频音频提取器已就绪');
+      console.log('🚀 视频音频提取器已就绪（支持缓存）');
       console.log('⌨️ 快捷键: Ctrl+O 打开文件 | Ctrl+T 切换主题');
+      console.log('💾 首次下载后，FFmpeg 引擎将缓存到浏览器');
 
     })();
   </script>
