@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FFmpeg 视频音频提取器 - 在线工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 1rem;
+      margin: 0;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 2rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      padding: 2rem;
+      max-width: 650px;
+      width: 100%;
+      color: #e0e0e0;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #ffffff;
+    }
+    h1 span {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .subtitle {
+      color: #a0a0b0;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      border-left: 3px solid #764ba2;
+      padding-left: 0.8rem;
+    }
+    .upload-area {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 1.5rem;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+    .upload-area:hover {
+      border-color: #764ba2;
+      background: rgba(118, 75, 162, 0.1);
+      transform: translateY(-2px);
+    }
+    .upload-area.dragover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.15);
+      transform: scale(1.02);
+    }
+    input[type="file"] { display: none; }
+    .file-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+    }
+    .file-icon { 
+      font-size: 3rem;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+    .file-name {
+      font-weight: 500;
+      font-size: 1rem;
+      word-break: break-all;
+      color: #c0c0d0;
+      max-width: 100%;
+    }
+    .file-hint { font-size: 0.8rem; color: #808090; }
+    .format-selector {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 1.2rem;
+      padding: 1rem 1.2rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .format-label {
+      font-weight: 500;
+      color: #b0b0c0;
+      font-size: 0.9rem;
+    }
+    select {
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.6rem 2rem 0.6rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.9rem;
+      cursor: pointer;
+      appearance: none;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 0.7rem center;
+      background-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    select:hover {
+      border-color: #764ba2;
+    }
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 0.9rem 2rem;
+      border-radius: 2.5rem;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+      letter-spacing: 0.5px;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(118, 75, 162, 0.4);
+    }
+    .btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .progress-container {
+      margin: 1.2rem 0 0.5rem;
+      background: rgba(255,255,255,0.05);
+      border-radius: 2rem;
+      height: 0.5rem;
+      width: 100%;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2rem;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(118, 75, 162, 0.5);
+    }
+    .status-text {
+      font-size: 0.85rem;
+      color: #a0a0b0;
+      margin-top: 0.5rem;
+      min-height: 1.2rem;
+    }
+    .download-link {
+      display: none;
+      margin-top: 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1rem;
+      border-radius: 1.2rem;
+      text-align: center;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .download-link a {
+      color: #667eea;
+      font-weight: 600;
+      text-decoration: none;
+      word-break: break-all;
+      transition: color 0.2s;
+    }
+    .download-link a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+    .error-message {
+      color: #ff6b6b;
+      background: rgba(255, 107, 107, 0.1);
+      padding: 0.8rem 1rem;
+      border-radius: 1.2rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      animation: fadeIn 0.3s ease;
+    }
+    .footer-note {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.75rem;
+      color: #606070;
+    }
+    .footer-note a {
+      color: #764ba2;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span>🎬 视频音频提取器</span>
+    </h1>
+    <div class="subtitle">纯浏览器端处理 · 无需上传 · 隐私安全</div>
+
+    <!-- 上传区域 -->
+    <div class="upload-area" id="uploadArea">
+      <label class="file-label" for="videoInput">
+        <span class="file-icon">🎥</span>
+        <span id="fileNameDisplay" class="file-name">点击选择视频或拖拽到此处</span>
+        <span class="file-hint">MP4 · MOV · MKV · AVI · WebM · FLV</span>
+      </label>
+      <input type="file" id="videoInput" accept="video/*,.mkv,.avi,.mov,.webm,.flv,.wmv">
+    </div>
+
+    <!-- 格式选择 -->
+    <div class="format-selector">
+      <span class="format-label">🎵 输出格式</span>
+      <select id="audioFormat">
+        <option value="mp3" selected>MP3（推荐）</option>
+        <option value="aac">AAC / M4A</option>
+        <option value="wav">WAV 无损</option>
+        <option value="ogg">OGG Vorbis</option>
+        <option value="flac">FLAC 无损</option>
+      </select>
+    </div>
+
+    <!-- 提取按钮 -->
+    <button id="extractBtn" class="btn" disabled>
+      🔊 提取音频
+    </button>
+
+    <!-- 进度条 -->
+    <div class="progress-container" id="progressContainer" style="display: none;">
+      <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+    </div>
+    <div id="statusMessage" class="status-text">正在初始化引擎...</div>
+
+    <!-- 下载区域 -->
+    <div id="downloadArea" class="download-link">
+      ✅ 提取完成：<a id="downloadLink" href="#" download="">下载音频</a>
+    </div>
+    
+    <!-- 错误提示 -->
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
+    
+    <div class="footer-note">
+      💡 基于 <a href="https://github.com/ffmpegwasm/ffmpeg.wasm" target="_blank">FFmpeg.wasm</a> · 
+      首次加载约31MB · 处理大文件请耐心等待
+    </div>
+  </div>
+
+  <!-- FFmpeg.wasm CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+  <script>
+    (function() {
+      // DOM 元素
+      const uploadArea = document.getElementById('uploadArea');
+      const videoInput = document.getElementById('videoInput');
+      const fileNameDisplay = document.getElementById('fileNameDisplay');
+      const extractBtn = document.getElementById('extractBtn');
+      const audioFormatSelect = document.getElementById('audioFormat');
+      const progressContainer = document.getElementById('progressContainer');
+      const progressBar = document.getElementById('progressBar');
+      const statusMessage = document.getElementById('statusMessage');
+      const downloadArea = document.getElementById('downloadArea');
+      const downloadLink = document.getElementById('downloadLink');
+      const errorMessageDiv = document.getElementById('errorMessage');
+
+      // 状态
+      let selectedFile = null;
+      let ffmpeg = null;
+      let ffmpegReady = false;
+      let isProcessing = false;
+      let outputBaseName = 'audio';
+
+      // 更新状态显示
+      function setStatus(text, isError = false) {
+        statusMessage.textContent = text;
+        statusMessage.style.color = isError ? '#ff6b6b' : '#a0a0b0';
+      }
+
+      // 显示/隐藏错误
+      function showError(text) {
+        errorMessageDiv.textContent = '⚠️ ' + text;
+        errorMessageDiv.style.display = 'block';
+        downloadArea.style.display = 'none';
+      }
+
+      function hideError() {
+        errorMessageDiv.style.display = 'none';
+      }
+
+      // 初始化 FFmpeg
+      async function initFFmpeg() {
+        if (ffmpegReady) return;
+        
+        setStatus('⏳ 正在加载 FFmpeg 引擎...');
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '5%';
+        
+        try {
+          const { FFmpeg } = FFmpegWASM;
+          ffmpeg = new FFmpeg();
+          
+          // 监听进度
+          ffmpeg.on('progress', ({ progress, time }) => {
+            if (isProcessing) {
+              const percent = Math.min(100, Math.round(progress * 100));
+              progressBar.style.width = `${percent}%`;
+              const timeSec = time ? Math.round(time / 1000000) : 0;
+              setStatus(`处理中... ${percent}%${timeSec ? ` (${timeSec}s)` : ''}`);
+            }
+          });
+
+          // 监听日志（可选，调试时取消注释）
+          // ffmpeg.on('log', ({ message }) => console.log('[FFmpeg]', message));
+          
+          await ffmpeg.load({
+            classWorker: true,
+          });
+          
+          ffmpegReady = true;
+          progressBar.style.width = '100%';
+          setStatus('✅ 引擎就绪，请选择视频文件');
+          
+          setTimeout(() => {
+            progressContainer.style.display = 'none';
+          }, 500);
+          
+          // 如果已经选了文件，启用按钮
+          if (selectedFile) {
+            extractBtn.disabled = false;
+          }
+          
+        } catch (error) {
+          console.error('FFmpeg 加载失败:', error);
+          setStatus('❌ 引擎加载失败，请刷新页面', true);
+          progressContainer.style.display = 'none';
+          showError('引擎加载失败: ' + error.message + '。请检查网络连接后刷新页面。');
+        }
+      }
+
+      // 页面加载时初始化
+      initFFmpeg();
+
+      // 文件处理
+      function handleFile(file) {
+        hideError();
+        downloadArea.style.display = 'none';
+        
+        if (!file) {
+          selectedFile = null;
+          fileNameDisplay.textContent = '点击选择视频或拖拽到此处';
+          extractBtn.disabled = true;
+          return;
+        }
+
+        // 验证文件类型
+        const videoExtensions = /\.(mp4|mkv|avi|mov|webm|flv|wmv|m4v|3gp|ogv|ts|mts|m2ts)$/i;
+        const isVideo = file.type.startsWith('video/') || videoExtensions.test(file.name);
+        
+        if (!isVideo) {
+          showError('请选择有效的视频文件（MP4, MKV, MOV, AVI, WebM 等）');
+          selectedFile = null;
+          extractBtn.disabled = true;
+          return;
+        }
+
+        // 检查文件大小（提示大文件）
+        if (file.size > 500 * 1024 * 1024) {
+          setStatus('⚠️ 文件较大（>500MB），处理可能需要较长时间');
+        }
+
+        selectedFile = file;
+        fileNameDisplay.textContent = '📁 ' + file.name;
+        
+        // 生成输出文件名
+        const dotIndex = file.name.lastIndexOf('.');
+        outputBaseName = dotIndex > 0 
+          ? file.name.substring(0, dotIndex).replace(/[^a-zA-Z0-9\u4e00-\u9fff\s\-_]/g, '').trim() 
+          : 'audio';
+        if (!outputBaseName) outputBaseName = 'audio';
+        
+        // 如果引擎就绪，启用按钮
+        extractBtn.disabled = !ffmpegReady;
+        
+        if (!ffmpegReady) {
+          setStatus('⏳ 等待引擎加载完成...');
+        } else {
+          setStatus('✅ 已选择文件，点击按钮提取音频');
+        }
+      }
+
+      // 事件监听
+      videoInput.addEventListener('change', (e) => {
+        handleFile(e.target.files[0]);
+      });
+
+      // 拖拽支持
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.add('dragover');
+        });
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        uploadArea.addEventListener(eventName, () => {
+          uploadArea.classList.remove('dragover');
+        });
+      });
+
+      uploadArea.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          // 更新input
+          const dt = new DataTransfer();
+          dt.items.add(files[0]);
+          videoInput.files = dt.files;
+          handleFile(files[0]);
+        }
+      });
+
+      // 点击上传区域
+      uploadArea.addEventListener('click', (e) => {
+        if (e.target !== videoInput && e.target.tagName !== 'LABEL') {
+          videoInput.click();
+        }
+      });
+
+      // 提取音频
+      extractBtn.addEventListener('click', async () => {
+        if (!selectedFile || !ffmpegReady || !ffmpeg || isProcessing) {
+          if (!selectedFile) showError('请先选择视频文件');
+          else if (!ffmpegReady) showError('引擎尚未就绪');
+          return;
+        }
+
+        isProcessing = true;
+        hideError();
+        downloadArea.style.display = 'none';
+        progressContainer.style.display = 'block';
+        progressBar.style.width = '0%';
+        extractBtn.disabled = true;
+        
+        const format = audioFormatSelect.value;
+        
+        try {
+          setStatus('📥 读取视频文件...');
+          
+          // 写入输入文件
+          const inputFile = 'input' + (selectedFile.name.includes('.') 
+            ? selectedFile.name.substring(selectedFile.name.lastIndexOf('.')) 
+            : '.mp4');
+          
+          const fileData = new Uint8Array(await selectedFile.arrayBuffer());
+          await ffmpeg.writeFile(inputFile, fileData);
+          
+          // 根据格式配置参数
+          let outputExt, codecArgs;
+          switch (format) {
+            case 'mp3':
+              outputExt = 'mp3';
+              codecArgs = ['-c:a', 'libmp3lame', '-q:a', '2'];
+              break;
+            case 'aac':
+              outputExt = 'm4a';
+              codecArgs = ['-c:a', 'aac', '-b:a', '192k'];
+              break;
+            case 'wav':
+              outputExt = 'wav';
+              codecArgs = ['-c:a', 'pcm_s16le'];
+              break;
+            case 'ogg':
+              outputExt = 'ogg';
+              codecArgs = ['-c:a', 'libvorbis', '-q:a', '3'];
+              break;
+            case 'flac':
+              outputExt = 'flac';
+              codecArgs = ['-c:a', 'flac', '-compression_level', '8'];
+              break;
+            default:
+              outputExt = 'mp3';
+              codecArgs = ['-c:a', 'libmp3lame'];
+          }
+          
+          const outputFile = `${outputBaseName}.${outputExt}`;
+          
+          setStatus('🎬 正在提取音频...');
+          
+          // 执行转换
+          await ffmpeg.exec([
+            '-i', inputFile,
+            '-vn',  // 去除视频
+            '-map_metadata', '-1',  // 去除元数据
+            ...codecArgs,
+            '-y',  // 覆盖
+            outputFile
+          ]);
+          
+          // 读取输出
+          setStatus('📦 准备下载...');
+          const outputData = await ffmpeg.readFile(outputFile);
+          
+          // 创建下载
+          const mimeTypes = {
+            mp3: 'audio/mpeg',
+            m4a: 'audio/mp4',
+            wav: 'audio/wav',
+            ogg: 'audio/ogg',
+            flac: 'audio/flac'
+          };
+          
+          const blob = new Blob([outputData.buffer], { 
+            type: mimeTypes[outputExt] || 'application/octet-stream' 
+          });
+          const url = URL.createObjectURL(blob);
+          
+          // 清理旧URL
+          if (downloadLink.href?.startsWith('blob:')) {
+            URL.revokeObjectURL(downloadLink.href);
+          }
+          
+          downloadLink.href = url;
+          downloadLink.download = outputFile;
+          downloadLink.textContent = '📥 ' + outputFile;
+          downloadArea.style.display = 'block';
+          
+          setStatus('✅ 提取完成！点击下载按钮保存音频');
+          progressBar.style.width = '100%';
+          
+          // 清理虚拟文件
+          try {
+            await ffmpeg.deleteFile(inputFile);
+            await ffmpeg.deleteFile(outputFile);
+          } catch(e) {}
+          
+        } catch (err) {
+          console.error('提取失败:', err);
+          showError('提取失败: ' + (err.message || '未知错误'));
+          setStatus('❌ 处理出错，请重试', true);
+          progressBar.style.width = '0%';
+        } finally {
+          isProcessing = false;
+          progressContainer.style.display = 'none';
+          extractBtn.disabled = !selectedFile || !ffmpegReady;
+        }
+      });
+
+      // 清理资源
+      window.addEventListener('beforeunload', () => {
+        if (downloadLink.href?.startsWith('blob:')) {
+          URL.revokeObjectURL(downloadLink.href);
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
