@@ -270,8 +270,8 @@
     </div>
   </div>
 
-  <!-- FFmpeg.wasm CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/umd/ffmpeg.js"></script>
+  <!-- 使用 FFmpeg.wasm 0.9.8 版本 - 不需要 Worker -->
+  <script src="https://unpkg.com/@ffmpeg/ffmpeg@0.9.8/dist/ffmpeg.min.js"></script>
   <script>
     (function() {
       // DOM 元素
@@ -315,30 +315,31 @@
       async function initFFmpeg() {
         if (ffmpegReady) return;
         
-        setStatus('⏳ 正在加载 FFmpeg 引擎...');
+        setStatus('⏳ 正在加载 FFmpeg 引擎（约31MB）...');
         progressContainer.style.display = 'block';
-        progressBar.style.width = '5%';
+        progressBar.style.width = '10%';
         
         try {
-          const { FFmpeg } = FFmpegWASM;
-          ffmpeg = new FFmpeg();
+          const { createFFmpeg } = FFmpeg;
           
-          // 监听进度
-          ffmpeg.on('progress', ({ progress, time }) => {
-            if (isProcessing) {
-              const percent = Math.min(100, Math.round(progress * 100));
-              progressBar.style.width = `${percent}%`;
-              const timeSec = time ? Math.round(time / 1000000) : 0;
-              setStatus(`处理中... ${percent}%${timeSec ? ` (${timeSec}s)` : ''}`);
+          // 使用 0.9.x 版本，不需要 SharedArrayBuffer
+          ffmpeg = createFFmpeg({
+            log: false,
+            corePath: 'https://unpkg.com/@ffmpeg/core@0.9.0/dist/ffmpeg-core.js',
+          });
+          
+          // 模拟加载进度
+          let loadProgress = 10;
+          const progressInterval = setInterval(() => {
+            if (loadProgress < 90) {
+              loadProgress += Math.random() * 15;
+              progressBar.style.width = `${Math.min(loadProgress, 90)}%`;
             }
-          });
-
-          // 监听日志（可选，调试时取消注释）
-          // ffmpeg.on('log', ({ message }) => console.log('[FFmpeg]', message));
+          }, 500);
           
-          await ffmpeg.load({
-            classWorker: true,
-          });
+          await ffmpeg.load();
+          
+          clearInterval(progressInterval);
           
           ffmpegReady = true;
           progressBar.style.width = '100%';
@@ -346,7 +347,7 @@
           
           setTimeout(() => {
             progressContainer.style.display = 'none';
-          }, 500);
+          }, 1000);
           
           // 如果已经选了文件，启用按钮
           if (selectedFile) {
@@ -440,7 +441,6 @@
       uploadArea.addEventListener('drop', (e) => {
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-          // 更新input
           const dt = new DataTransfer();
           dt.items.add(files[0]);
           videoInput.files = dt.files;
@@ -476,58 +476,50 @@
           setStatus('📥 读取视频文件...');
           
           // 写入输入文件
-          const inputFile = 'input' + (selectedFile.name.includes('.') 
-            ? selectedFile.name.substring(selectedFile.name.lastIndexOf('.')) 
-            : '.mp4');
-          
-          const fileData = new Uint8Array(await selectedFile.arrayBuffer());
-          await ffmpeg.writeFile(inputFile, fileData);
+          const { fetchFile } = FFmpeg;
+          ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(selectedFile));
           
           // 根据格式配置参数
-          let outputExt, codecArgs;
+          let outputExt, outputArgs;
           switch (format) {
             case 'mp3':
               outputExt = 'mp3';
-              codecArgs = ['-c:a', 'libmp3lame', '-q:a', '2'];
+              outputArgs = ['-acodec', 'libmp3lame', '-q:a', '2'];
               break;
             case 'aac':
               outputExt = 'm4a';
-              codecArgs = ['-c:a', 'aac', '-b:a', '192k'];
+              outputArgs = ['-acodec', 'aac', '-b:a', '192k'];
               break;
             case 'wav':
               outputExt = 'wav';
-              codecArgs = ['-c:a', 'pcm_s16le'];
+              outputArgs = ['-acodec', 'pcm_s16le'];
               break;
             case 'ogg':
               outputExt = 'ogg';
-              codecArgs = ['-c:a', 'libvorbis', '-q:a', '3'];
+              outputArgs = ['-acodec', 'libvorbis', '-q:a', '3'];
               break;
             case 'flac':
               outputExt = 'flac';
-              codecArgs = ['-c:a', 'flac', '-compression_level', '8'];
+              outputArgs = ['-acodec', 'flac', '-compression_level', '8'];
               break;
             default:
               outputExt = 'mp3';
-              codecArgs = ['-c:a', 'libmp3lame'];
+              outputArgs = ['-acodec', 'libmp3lame'];
           }
           
-          const outputFile = `${outputBaseName}.${outputExt}`;
+          const outputFile = `output.${outputExt}`;
           
           setStatus('🎬 正在提取音频...');
+          progressBar.style.width = '30%';
           
           // 执行转换
-          await ffmpeg.exec([
-            '-i', inputFile,
-            '-vn',  // 去除视频
-            '-map_metadata', '-1',  // 去除元数据
-            ...codecArgs,
-            '-y',  // 覆盖
-            outputFile
-          ]);
+          await ffmpeg.run('-i', 'input.mp4', '-vn', ...outputArgs, outputFile);
+          
+          progressBar.style.width = '80%';
+          setStatus('📦 准备下载...');
           
           // 读取输出
-          setStatus('📦 准备下载...');
-          const outputData = await ffmpeg.readFile(outputFile);
+          const data = ffmpeg.FS('readFile', outputFile);
           
           // 创建下载
           const mimeTypes = {
@@ -538,7 +530,7 @@
             flac: 'audio/flac'
           };
           
-          const blob = new Blob([outputData.buffer], { 
+          const blob = new Blob([data.buffer], { 
             type: mimeTypes[outputExt] || 'application/octet-stream' 
           });
           const url = URL.createObjectURL(blob);
@@ -549,8 +541,8 @@
           }
           
           downloadLink.href = url;
-          downloadLink.download = outputFile;
-          downloadLink.textContent = '📥 ' + outputFile;
+          downloadLink.download = `${outputBaseName}.${outputExt}`;
+          downloadLink.textContent = `📥 ${outputBaseName}.${outputExt}`;
           downloadArea.style.display = 'block';
           
           setStatus('✅ 提取完成！点击下载按钮保存音频');
@@ -558,13 +550,13 @@
           
           // 清理虚拟文件
           try {
-            await ffmpeg.deleteFile(inputFile);
-            await ffmpeg.deleteFile(outputFile);
+            ffmpeg.FS('unlink', 'input.mp4');
+            ffmpeg.FS('unlink', outputFile);
           } catch(e) {}
           
         } catch (err) {
           console.error('提取失败:', err);
-          showError('提取失败: ' + (err.message || '未知错误'));
+          showError('提取失败: ' + (err.message || '未知错误。可能视频编码不兼容，请尝试其他格式。'));
           setStatus('❌ 处理出错，请重试', true);
           progressBar.style.width = '0%';
         } finally {
