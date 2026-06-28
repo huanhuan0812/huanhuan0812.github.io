@@ -908,4 +908,4 @@ function fetchData(callback) {
 document.getElementById(&quot;myId&quot;);
 document.qu ...`,l:"programming/web/javascript/index.html#dom-操作",a:"dom-操作"},"39.8":{t:"ES6+ 特性\r",p:`// 解构赋值
 let [a, b] = [1, 2]; // a=1, b=2
-let {x, y} = {x: 10,  ...`,l:"programming/web/javascript/index.html#es6-特性",a:"es6-特性"}},t={previewLength:62,buttonLabel:"搜索",placeholder:"搜索文档",allow:[],ignore:["*.png","*.jpg","*.jpeg","*.gif",".vitepress/*"],tokenize:"full",cache:!0,respect:"title",encode:!1,weight:100,encodeSpecialChars:!0,encodeSpecialCharsPattern:{}},r={INDEX_DATA:e,PREVIEW_LOOKUP:a,Options:t};export{r as default};
+let {x, y} = {x: 10,  ...`,l:"programming/web/javascript/index.html#es6-特性",a:"es6-特性"}},t={previewLength:62,buttonLabel:"搜索",placeholder:"搜索文档",allow:[],ignore:["*.png","*.jpg","*.jpeg","*.gif",".vitepress/*"],tokenize:"full",cache:!0,respect:"title",weight:100,encode:!1,encodeSpecialChars:!0,encodeSpecialCharsPattern:{}},r={INDEX_DATA:e,PREVIEW_LOOKUP:a,Options:t};export{r as default};
